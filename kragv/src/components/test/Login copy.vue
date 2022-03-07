@@ -6,7 +6,7 @@
       <div class="avatar_box">
         <img src="../assets/agvLogo.jpg" />
       </div>
-      <!-- 表单 -->
+      <!-- 表单   -->
       <el-form ref="loginFormRef"
                :model="loginForm"
                :rules="loginFormRules"
