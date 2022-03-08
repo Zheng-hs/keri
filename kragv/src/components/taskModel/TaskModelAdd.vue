@@ -161,6 +161,8 @@
                          value="5"></el-option>
               <el-option label="6"
                          value="6"></el-option>
+              <el-option label="7"
+                         value="7"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="Fork层数"
@@ -283,6 +285,8 @@
                          value="5"></el-option>
               <el-option label="6"
                          value="6"></el-option>
+              <el-option label="7"
+                         value="7"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="Fork层数"

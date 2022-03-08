@@ -47,16 +47,16 @@
           </el-menu-item>
 
           <el-menu-item index="/taskmodel"
-                        v-if="currentAuthority == 99"
                         @click="saveNavState('/taskmodel')">
             <!-- 文本 -->
-            <span>任务派发old</span>
+            <span>任务派发</span>
           </el-menu-item>
 
           <el-menu-item index="/taskmodelPlus"
+                        v-if="currentAuthority == 99"
                         @click="saveNavState('/taskmodelPlus')">
             <!-- 文本 -->
-            <span>任务派发</span>
+            <span>任务派发Plus</span>
           </el-menu-item>
 
           <el-menu-item index="/user"
