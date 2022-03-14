@@ -53,10 +53,9 @@
           </el-menu-item>
 
           <el-menu-item index="/taskmodelPlus"
-                        v-if="currentAuthority == 99"
                         @click="saveNavState('/taskmodelPlus')">
             <!-- 文本 -->
-            <span>任务派发Plus</span>
+            <span>流水线任务派发</span>
           </el-menu-item>
 
           <el-menu-item index="/user"
@@ -494,13 +493,13 @@ export default {
 
 // 中部导航栏
 .header-center-left {
-  width: 30%;
+  width: 27%;
 }
 
 // 中部导航栏
 .header-center-right {
   // width: 550px;
-  width: 650px;
+  width: 690px;
   // float: right !important;
   .el-menu {
     // background-color: rgba(1, 1, 1, 0);
