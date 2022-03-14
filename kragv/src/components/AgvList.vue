@@ -7,6 +7,10 @@
               class="btnrow">
         <el-col class="btnrow1">
           <el-button type="primary"
+                     @click="agvRegisterDialogVisible = true">登记车辆</el-button>
+          <el-button type="primary"
+                     @click="agvunRegisterDialogVisible = true">注销车辆</el-button>
+          <el-button type="primary"
                      @click="openCheckAllEQ">充电检测</el-button>
           <el-button type="primary"
                      @click="agvSetDialogVisible=true">车体设置</el-button>
@@ -74,6 +78,70 @@
                      :page-size="queryInfo.pagesize"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="total"></el-pagination>
+
+      <!-- 登记车辆 -->
+      <el-dialog title="登记车辆"
+                 :visible.sync="agvRegisterDialogVisible"
+                 width="400px"
+                 @close="agvRegisterDialogClosed">
+        <!-- 内容主体区 -->
+        <el-form ref="agvRegisterFormRef"
+                 :model="agvRegisterForm"
+                 :rules="agvRegisterFormRules"
+                 label-width="60px"
+                 class="dialogForm">
+          <el-form-item label="AGV"
+                        prop="agvId">
+            <el-input v-model="agvRegisterForm.agvId"></el-input>
+          </el-form-item>
+          <el-form-item label="区域"
+                        prop="areaId">
+            <el-input v-model="agvRegisterForm.areaId"></el-input>
+          </el-form-item>
+
+        </el-form>
+
+        <!-- 按键区 -->
+        <div slot="footer"
+             class="dialog-footer">
+          <el-button @click="agvRegisterDialogVisible = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="registerAgv">确 定</el-button>
+        </div>
+        <!-- 按键区 -->
+
+      </el-dialog>
+      <!-- 登记车辆 -->
+
+      <!-- 注销车辆 -->
+      <el-dialog title="注销车辆"
+                 :visible.sync="agvunRegisterDialogVisible"
+                 width="400px"
+                 @close="agvunRegisterDialogClosed">
+        <!-- 内容主体区 -->
+        <el-form ref="agvunRegisterFormRef"
+                 :model="agvunRegisterForm"
+                 :rules="agvunRegisterFormRules"
+                 label-width="60px"
+                 class="dialogForm">
+          <el-form-item label="AGV"
+                        prop="agvId">
+            <el-input v-model="agvunRegisterForm.agvId"></el-input>
+          </el-form-item>
+
+        </el-form>
+
+        <!-- 按键区 -->
+        <div slot="footer"
+             class="dialog-footer">
+          <el-button @click="agvunRegisterDialogVisible = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="unRegisterAgv">确 定</el-button>
+        </div>
+        <!-- 按键区 -->
+
+      </el-dialog>
+      <!-- 注销车辆 -->
 
       <!-- 车体设置的对话框 -->
       <el-dialog title="车体设置"
@@ -226,6 +294,35 @@ export default {
       lastBrowseTimeouter: null,
       sendDataSwitch: true,
 
+
+
+      // 登记车辆对话框的显示与隐藏
+      agvRegisterDialogVisible: false,
+      // 登记车辆选择的agv
+      agvRegisterForm: {
+        agvId: "",
+        areaId: "",
+      },
+      // 登记车辆表单的验证规则对象
+      agvRegisterFormRules: {
+        agvId: [{ required: true, message: '请填写AGV', trigger: 'blur' }],
+        areaId: [{ required: true, message: '请填写AGV区域', trigger: 'blur' }],
+      },
+
+
+
+      // 注销车辆对话框的显示与隐藏
+      agvunRegisterDialogVisible: false,
+      // 注销车辆填写的agv
+      agvunRegisterForm: {
+        agvId: "",
+      },
+      // 注销车辆表单的验证规则对象
+      agvunRegisterFormRules: {
+        agvId: [{ required: true, message: '请填写AGV', trigger: 'blur' }],
+      },
+
+
       // 车体设置对话框的显示与隐藏
       agvSetDialogVisible: false,
       // 车体设置选择的agv
@@ -370,6 +467,74 @@ export default {
       })
 
     },
+
+    // 登记车体窗体关闭,触发的函数
+    async agvRegisterDialogClosed () {
+      this.$refs.agvRegisterFormRef.resetFields()
+    },
+
+
+
+    // 登记agv
+    registerAgv () {
+      this.$refs.agvRegisterFormRef.validate(async valid => {
+        if (!valid) return
+        let agvId = this.agvRegisterForm.agvId
+        let areaId = this.agvRegisterForm.areaId
+        const { data: res } = await this.$http.post(`registerAgv/${agvId}/${areaId}`)
+
+        if (res.meta.status != 200) {
+          // return this.$message.error(res.meta.msg)
+          return this.$message({
+            type: 'error',
+            message: res.meta.msg,
+            showClose: true
+          })
+        }
+        // this.$message.success(res.meta.msg)
+        this.$message({
+          type: 'success',
+          message: res.meta.msg,
+          showClose: true
+        })
+        this.agvRegisterDialogVisible = false
+      })
+
+    },
+
+
+    // 注销车体窗体关闭,触发的函数
+    async agvunRegisterDialogClosed () {
+      this.$refs.agvunRegisterFormRef.resetFields()
+    },
+
+    // 注销agv
+    unRegisterAgv () {
+      this.$refs.agvunRegisterFormRef.validate(async valid => {
+        if (!valid) return
+        let agvId = this.agvunRegisterForm.agvId
+        const { data: res } = await this.$http.delete(`unRegisterAgv/${agvId}`)
+
+        if (res.meta.status != 200) {
+          // return this.$message.error(res.meta.msg)
+          return this.$message({
+            type: 'error',
+            message: res.meta.msg,
+            showClose: true
+          })
+        }
+        // this.$message.success(res.meta.msg)
+        this.$message({
+          type: 'success',
+          message: res.meta.msg,
+          showClose: true
+        })
+        this.agvunRegisterDialogVisible = false
+      })
+
+    },
+
+
 
     // 车体设置窗体关闭,触发的函数
     async agvSetDialogClosed () {
