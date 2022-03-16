@@ -8,6 +8,8 @@
         <el-col class="btnrow1">
           <el-button type="primary"
                      @click="goAddPage">新增</el-button>
+          <el-button type="primary"
+                     @click="agvForkAlignTaskDialogVisible = true">储位修正任务</el-button>
         </el-col>
         <el-col class="btnrow2">
           <span>任务模板名:</span>
@@ -127,6 +129,40 @@
       </span>
     </el-dialog>
 
+    <!-- 储位修正任务 -->
+    <el-dialog title="储位修正任务"
+               :visible.sync="agvForkAlignTaskDialogVisible"
+               width="400px"
+               @close="agvForkAlignTaskDialogClosed">
+      <!-- 内容主体区 -->
+      <el-form ref="agvForkAlignTaskFormRef"
+               :model="agvForkAlignTaskForm"
+               :rules="agvForkAlignTaskFormRules"
+               label-width="80px"
+               class="dialogForm">
+        <el-form-item label="开始点位"
+                      prop="startPoint">
+          <el-input v-model="agvForkAlignTaskForm.startPoint"></el-input>
+        </el-form-item>
+        <el-form-item label="结束点位"
+                      prop="endPoint">
+          <el-input v-model="agvForkAlignTaskForm.endPoint"></el-input>
+        </el-form-item>
+
+      </el-form>
+
+      <!-- 按键区 -->
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="agvForkAlignTaskDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="dispatchAlignMission">确 定</el-button>
+      </div>
+      <!-- 按键区 -->
+
+    </el-dialog>
+    <!-- 储位修正任务 -->
+
   </div>
 </template>
 
@@ -156,6 +192,20 @@ export default {
 
       // 表格高度
       tableHeight: window.innerHeight * 0.7,
+
+
+      // 储位修正任务对话框的显示与隐藏
+      agvForkAlignTaskDialogVisible: false,
+      // 储位修正任务选择的agv
+      agvForkAlignTaskForm: {
+        startPoint: "",
+        endPoint: "",
+      },
+      // 储位修正任务表单的验证规则对象
+      agvForkAlignTaskFormRules: {
+        startPoint: [{ required: true, message: '请填写开始点位', trigger: 'blur' }],
+        endPoint: [{ required: true, message: '请填写结束点位', trigger: 'blur' }],
+      },
     }
   },
   created () {
@@ -453,6 +503,60 @@ export default {
       this.getTaskModel()
 
     },
+
+    // 储位修正任务窗体关闭,触发的函数
+    async agvForkAlignTaskDialogClosed () {
+      this.$refs.agvForkAlignTaskFormRef.resetFields()
+    },
+    // 派发储位修正任务
+    dispatchAlignMission () {
+      this.$refs.agvForkAlignTaskFormRef.validate(async valid => {
+        if (!valid) return
+        let startPoint = this.agvForkAlignTaskForm.startPoint
+        let endPoint = this.agvForkAlignTaskForm.endPoint
+        let startcol = Math.floor(startPoint / 100)
+        let endcol = Math.floor(endPoint / 100)
+        if (startcol !== endcol) {
+          return this.$message({
+            type: 'error',
+            message: "开始点和结束点不是同一个巷道",
+            showClose: true
+          })
+        }
+
+        let markList = []
+        let actionList = []
+        for (let i = startPoint; i <= endPoint; i++) {
+          markList.push(i.toString())
+          actionList.push("Get_offset")
+        }
+        let dispatchId = (new Date()).getTime()
+
+        let task = {}
+        task.markList = markList
+        task.actionList = actionList
+        task.dispatchId = dispatchId
+
+        const { data: res } = await this.$http.post('/dispatchMission', task)
+        if (res.meta.status != 200) {
+          // return this.$message.error(res.meta.msg)
+          return this.$message({
+            showClose: true,
+            message: res.meta.msg,
+            type: 'error'
+          })
+        }
+        // this.$message.success(res.meta.msg)
+        this.$message({
+          showClose: true,
+          message: res.meta.msg,
+          type: 'success'
+        })
+        this.agvForkAlignTaskDialogVisible = false
+      })
+
+    },
+    // 
     // 
     // 
   },
