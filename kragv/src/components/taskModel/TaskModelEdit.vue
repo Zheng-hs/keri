@@ -729,7 +729,7 @@ export default {
         let nodeShelf_num = node.shelf_num
         let nodeFork_num = node.fork_num
         let nodeShelfCate = node.Transfer_Obj_ID.substring(0, 1)
-        let nodeBoxNum = node.boxNum == '' ? '100001' : node.boxNum
+        let nodeBoxNum = node.boxNum == '' ? '000000' : node.boxNum
         let actCommand = '_' + nodeAct + nodeDirection + nodeShelf_num + nodeFork_num + nodeShelfCate + '_000000_' + nodeBoxNum
         let markListLen = this.submitForm.markList.length
         if (markListLen == 0) {

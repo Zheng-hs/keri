@@ -99,7 +99,7 @@
           </el-form-item>
 
           <el-form-item label="友情提示">
-            1_(_GR21E_000000_100001)
+            1_(_GR21E_000000_000000)
           </el-form-item>
           <el-form-item label="流水线动作"
                         prop="action">
