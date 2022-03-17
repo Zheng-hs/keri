@@ -7,17 +7,15 @@
               class="btnrow">
         <el-col class="btnrow1">
           <el-button type="primary"
-                     @click="agvRegisterDialogVisible = true">登记车辆</el-button>
-          <el-button type="primary"
-                     @click="agvunRegisterDialogVisible = true">注销车辆</el-button>
+                     @click="agvRegisterOrunRegisterDialogVisible = true">登记/注销</el-button>
           <el-button type="primary"
                      @click="openCheckAllEQ">充电检测</el-button>
           <el-button type="primary"
                      @click="agvSetDialogVisible=true">车体设置</el-button>
           <el-button type="primary"
-                     @click="agvMapUpdateDialogOpened">更新车体地图</el-button>
+                     @click="agvUpdateDialogVisible = true">更新车体</el-button>
           <el-button type="primary"
-                     @click="agvFirmwareUpdateDialogOpened">更新车体固件</el-button>
+                     @click="agvAlignDialogVisible = true">储位修正</el-button>
         </el-col>
         <el-col class="btnrow2">
           <span>车号:</span>
@@ -78,6 +76,20 @@
                      :page-size="queryInfo.pagesize"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="total"></el-pagination>
+
+      <!-- 登记/注销 -->
+      <el-dialog title="登记/注销车辆"
+                 :visible.sync="agvRegisterOrunRegisterDialogVisible"
+                 width="300px">
+        <!-- 内容主体区 -->
+        <div id="agvSetDialogButtonArea">
+          <el-button type="primary"
+                     @click="agvRegisterDialogVisible = true">登记车辆</el-button>
+          <el-button type="primary"
+                     @click="agvunRegisterDialogVisible = true">注销车辆</el-button>
+        </div>
+      </el-dialog>
+      <!-- 登记/注销 -->
 
       <!-- 登记车辆 -->
       <el-dialog title="登记车辆"
@@ -182,6 +194,20 @@
       </el-dialog>
       <!-- 车体设置的对话框 -->
 
+      <!-- agv更新对话框 -->
+      <el-dialog title="更新车体"
+                 :visible.sync="agvUpdateDialogVisible"
+                 width="300px">
+        <!-- 内容主体区 -->
+        <div id="agvSetDialogButtonArea">
+          <el-button type="primary"
+                     @click="agvMapUpdateDialogOpened">更新车体地图</el-button>
+          <el-button type="primary"
+                     @click="agvFirmwareUpdateDialogOpened">更新车体固件</el-button>
+        </div>
+      </el-dialog>
+      <!-- agv更新对话框 -->
+
       <!-- agv地图更新 -->
       <el-dialog title="更新车体地图"
                  :visible.sync="agvMapUpdateDialogVisible"
@@ -266,6 +292,79 @@
       </el-dialog>
       <!-- agv固件更新 -->
 
+      <!-- 储位修正对话框 -->
+      <el-dialog title="储位修正"
+                 :visible.sync="agvAlignDialogVisible"
+                 width="500px">
+        <!-- 内容主体区 -->
+        <div id="agvSetDialogButtonArea">
+          <el-button type="primary"
+                     @click="agvForkAlignTaskDialogVisible = true">储位修正任务</el-button>
+          <el-button type="primary"
+                     @click="toAlignFilePage">查看修正文件</el-button>
+          <el-button type="primary"
+                     @click="agvAlignFileUploadDialogVisible = true">上传修正文件</el-button>
+        </div>
+      </el-dialog>
+      <!-- 储位修正对话框 -->
+
+      <!-- 储位修正任务 -->
+      <el-dialog title="储位修正任务"
+                 :visible.sync="agvForkAlignTaskDialogVisible"
+                 width="400px"
+                 @close="agvForkAlignTaskDialogClosed">
+        <!-- 内容主体区 -->
+        <el-form ref="agvForkAlignTaskFormRef"
+                 :model="agvForkAlignTaskForm"
+                 :rules="agvForkAlignTaskFormRules"
+                 label-width="80px"
+                 class="dialogForm">
+          <el-form-item label="开始点位"
+                        prop="startPoint">
+            <el-input v-model="agvForkAlignTaskForm.startPoint"></el-input>
+          </el-form-item>
+          <el-form-item label="结束点位"
+                        prop="endPoint">
+            <el-input v-model="agvForkAlignTaskForm.endPoint"></el-input>
+          </el-form-item>
+
+        </el-form>
+
+        <!-- 按键区 -->
+        <div slot="footer"
+             class="dialog-footer">
+          <el-button @click="agvForkAlignTaskDialogVisible = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="dispatchAlignMission">确 定</el-button>
+        </div>
+        <!-- 按键区 -->
+
+      </el-dialog>
+      <!-- 储位修正任务 -->
+
+      <!-- 上传修正文件对话框 -->
+      <el-dialog title="上传修正文件"
+                 :visible.sync="agvAlignFileUploadDialogVisible"
+                 width="500px"
+                 @close="agvAlignFileUploadDialogClosed">
+        <!-- 内容主体区 -->
+        <div style="padding:10px;">
+          <el-upload class="upload-demo"
+                     :action=agvAlignFileUploadUrl
+                     name="files"
+                     multiple
+                     :file-list="fileList">
+            <el-button size="small"
+                       type="primary">点击上传</el-button>
+            <div slot="tip"
+                 class="el-upload__tip"></div>
+          </el-upload>
+        </div>
+        <!-- 内容主体区 -->
+
+      </el-dialog>
+      <!-- 上传修正文件对话框 -->
+
     </el-card>
 
   </div>
@@ -294,7 +393,8 @@ export default {
       lastBrowseTimeouter: null,
       sendDataSwitch: true,
 
-
+      // 登记/注销车辆对话框的显示与隐藏
+      agvRegisterOrunRegisterDialogVisible: false,
 
       // 登记车辆对话框的显示与隐藏
       agvRegisterDialogVisible: false,
@@ -334,6 +434,9 @@ export default {
         agvId: [{ required: true, message: '请选择AGV', trigger: 'blur' }],
       },
 
+      // 车体更新对话框的显示与隐藏
+      agvUpdateDialogVisible: false,
+
       // 地图文件上传地址
       mapFileUrl: this.$http.defaults.baseURL + "/upload/file/map",
       // 固件文件上传地址
@@ -348,6 +451,31 @@ export default {
       agvWillSelectList: [],
       // 选择agv穿梭框
       agvSelectedList: [],
+
+
+      // 储位修正任务对话框的显示与隐藏
+      agvForkAlignTaskDialogVisible: false,
+      // 储位修正任务选择的agv
+      agvForkAlignTaskForm: {
+        startPoint: "",
+        endPoint: "",
+      },
+      // 储位修正任务表单的验证规则对象
+      agvForkAlignTaskFormRules: {
+        startPoint: [{ required: true, message: '请填写开始点位', trigger: 'blur' }],
+        endPoint: [{ required: true, message: '请填写结束点位', trigger: 'blur' }],
+      },
+
+
+      // 储位修正对话框的显示与隐藏
+      agvAlignDialogVisible: false,
+      // 上传修正文件对话框的显示与隐藏
+      agvAlignFileUploadDialogVisible: false,
+      // 上传修正文件地址
+      agvAlignFileUploadUrl: this.$http.defaults.baseURL + "/upload/file/align",
+
+
+
     }
   },
   created () {
@@ -498,6 +626,7 @@ export default {
           showClose: true
         })
         this.agvRegisterDialogVisible = false
+        this.agvRegisterOrunRegisterDialogVisible = false
       })
 
     },
@@ -530,6 +659,7 @@ export default {
           showClose: true
         })
         this.agvunRegisterDialogVisible = false
+        this.agvRegisterOrunRegisterDialogVisible = false
       })
 
     },
@@ -618,6 +748,7 @@ export default {
     agvMapUpdateDialogClosed () {
       this.agvSelectedList = []
       this.agvWillSelectList = []
+      this.fileList = []
     },
 
 
@@ -631,6 +762,7 @@ export default {
     agvFirmwareUpdateDialogClosed () {
       this.agvSelectedList = []
       this.agvWillSelectList = []
+      this.fileList = []
     },
 
     // 文件上传数量限制
@@ -675,6 +807,7 @@ export default {
       let res = await this.upload("/upload/map")
       if (res == true) {
         this.agvMapUpdateDialogVisible = false
+        this.agvUpdateDialogVisible = false
       }
 
     },
@@ -683,8 +816,75 @@ export default {
       let res = await this.upload("/upload/firmware")
       if (res == true) {
         this.agvFirmwareUpdateDialogVisible = false
+        this.agvUpdateDialogVisible = false
       }
 
+    },
+
+
+
+    // 储位修正任务窗体关闭,触发的函数
+    async agvForkAlignTaskDialogClosed () {
+      this.$refs.agvForkAlignTaskFormRef.resetFields()
+
+    },
+    // 派发储位修正任务
+    dispatchAlignMission () {
+      this.$refs.agvForkAlignTaskFormRef.validate(async valid => {
+        if (!valid) return
+        let startPoint = this.agvForkAlignTaskForm.startPoint
+        let endPoint = this.agvForkAlignTaskForm.endPoint
+        let startcol = Math.floor(startPoint / 100)
+        let endcol = Math.floor(endPoint / 100)
+        if (startcol !== endcol) {
+          return this.$message({
+            type: 'error',
+            message: "开始点和结束点不是同一个巷道",
+            showClose: true
+          })
+        }
+
+        let markList = []
+        let actionList = []
+        for (let i = startPoint; i <= endPoint; i++) {
+          markList.push(i.toString())
+          actionList.push("Get_offset")
+        }
+        let dispatchId = (new Date()).getTime()
+
+        let task = {}
+        task.markList = markList
+        task.actionList = actionList
+        task.dispatchId = dispatchId
+
+        const { data: res } = await this.$http.post('/dispatchMission', task)
+        if (res.meta.status != 200) {
+          // return this.$message.error(res.meta.msg)
+          return this.$message({
+            showClose: true,
+            message: res.meta.msg,
+            type: 'error'
+          })
+        }
+        // this.$message.success(res.meta.msg)
+        this.$message({
+          showClose: true,
+          message: res.meta.msg,
+          type: 'success'
+        })
+        this.agvForkAlignTaskDialogVisible = false
+        this.agvAlignDialogVisible = false
+      })
+
+    },
+
+    // 查看修正文件
+    toAlignFilePage () {
+      window.open("/align")
+    },
+    // 上传修正文件窗体关闭,触发的函数
+    agvAlignFileUploadDialogClosed () {
+      this.fileList = []
     },
 
 
