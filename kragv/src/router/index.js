@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login'
+import AdminLogin from '../components/AdminLogin'
 import Home from '../components/Home'
 import Map from '../components/Map'
 import TaskList from '../components/TaskList'
@@ -27,6 +28,7 @@ Vue.use(VueRouter)
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
+  { path: '/adminlogin', component: AdminLogin },
   // TestOrder
   { path: '/testorder', component: TestOrder },
   { path: '/testss', component: Testss },
@@ -88,6 +90,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.path === '/login') return next()
+  if (to.path === '/adminlogin') return next()
   if (to.path === '/mobileLogin') return next()
   const tokenStr = window.sessionStorage.getItem('token')
   if (!tokenStr) return next('/login')
