@@ -65,7 +65,24 @@
                          width='130px'
                          prop="unBlock"></el-table-column>
         <el-table-column label="最近通讯时间"
+                         width='150px'
                          prop="updateTime"></el-table-column>
+        <el-table-column label="车体IP地址"
+                         width='135px'
+                         prop="ipAddress"></el-table-column>
+        <el-table-column label="伸缩电机状态"
+                         width='110px'
+                         prop="forkMotorsStatus"></el-table-column>
+        <el-table-column label="拨指电机状态"
+                         width='110px'
+                         prop="horomerStatus"></el-table-column>
+        <el-table-column label="升降电机状态"
+                         width='110px'
+                         prop="riseFallMotorStatus"></el-table-column>
+        <el-table-column label="旋转电机状态"
+                         width='110px'
+                         prop="rotateMotorsStatus"></el-table-column>
+
       </el-table>
 
       <!-- 分页区域 -->
@@ -714,7 +731,7 @@ export default {
     // 取消任务
     async cancelMission () {
       if (!this.agvSetDialogValidate()) return
-      const { data: res } = await this.$http.delete('cancel/mission/' + this.agvSetForm.agvId)
+      const { data: res } = await this.$http.delete('cancel/agv/' + this.agvSetForm.agvId)
       this.agvSetResultHandler(res)
     },
 

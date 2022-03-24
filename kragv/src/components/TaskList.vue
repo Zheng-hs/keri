@@ -66,6 +66,15 @@
                          prop="startTime"></el-table-column>
         <el-table-column label="派发时间"
                          prop="taskBeginTime"></el-table-column>
+        <!-- 操作区 -->
+        <el-table-column label="操作"
+                         width="100px">
+          <template slot-scope="scope">
+            <el-button type="danger"
+                       size="mini"
+                       @click="delTask(scope.row.dispatchId)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <!-- 分页区域 -->
@@ -223,6 +232,44 @@ export default {
       } else {
         this.queryInfo.query = {}
       }
+      this.getMissionList()
+    },
+    // 删除任务
+    async delTask (dispatchId) {
+      // 弹框提示用户是否删除信息
+      const confirmResult = await this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+
+      // 如果用户确认删除，则返回字符串 confirm
+      // 如果用户取消删除，则返回字符串 cancel
+      // console.log(confirmResult)
+      if (confirmResult !== 'confirm') {
+        // return this.$message.info('已取消操作！')
+        return this.$message({
+          showClose: true,
+          message: '已取消操作！',
+          type: 'info'
+        })
+      }
+
+      const { data: res } = await this.$http.delete('/cancel/mission/' + dispatchId)
+      if (res.meta.status != 200) {
+        // return this.$message.error(res.meta.msg)
+        return this.$message({
+          showClose: true,
+          message: res.meta.msg,
+          type: 'error'
+        })
+      }
+      // this.$message.success(res.meta.msg)
+      this.$message({
+        showClose: true,
+        message: res.meta.msg,
+        type: 'success'
+      })
       this.getMissionList()
     },
   }
