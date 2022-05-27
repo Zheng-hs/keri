@@ -6,6 +6,11 @@ import 'less-loader'
 import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
 import axios from 'axios'
+import {
+  Radio
+} from 'element-ui';
+
+Vue.use(Radio)
 
 Vue.config.productionTip = false
 

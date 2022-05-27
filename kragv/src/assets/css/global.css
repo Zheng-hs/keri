@@ -87,7 +87,16 @@ body,
 .el-step__description {
   white-space: pre-wrap !important;
 }
+::-webkit-scrollbar {
+  width: 10px;
 
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #eee;
+
+  border-radius: 10px;
+}
 /* 托拉条 */
 /* ::-webkit-scrollbar {
   width: 8px;

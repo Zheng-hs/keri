@@ -14,6 +14,9 @@ import TaskModelPlus from '../components/taskModelPlus/TaskModelPlus'
 import TaskModelAddPlus from '../components/taskModelPlus/TaskModelAddPlus'
 import TaskModelEditPlus from '../components/taskModelPlus/TaskModelEditPlus'
 import User from '../components/User'
+import Action from '../components/Action'
+import Group from '../components/Group'
+import TaskName from '../components/TaskName'
 import SystemTaskAdd from '../components/SystemTaskAdd'
 import originmodel from '../components/originmodel'
 // admin
@@ -48,6 +51,18 @@ const routes = [
       { path: '/taskmodeladdplus', component: TaskModelAddPlus },
       { name: 'taskModelEditPlus', path: '/taskmodeleditplus', component: TaskModelEditPlus },
       { path: '/user', component: User },
+      {
+        path: '/taskname',
+        component: TaskName
+      },
+      {
+        path: '/group',
+        component: Group
+      },
+      {
+        path: '/action',
+        component: Action
+      },
       {
         path: '/systemtaskadd',
         component: SystemTaskAdd

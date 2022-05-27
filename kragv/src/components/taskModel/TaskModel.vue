@@ -3,140 +3,102 @@
     <!-- 卡片视图区 -->
     <el-card>
       <!-- 搜索与添加区 -->
-      <el-row :gutter="20"
-              class="btnrow">
+      <el-row :gutter="20" class="btnrow">
         <el-col class="btnrow1">
-          <el-button type="primary"
-                     @click="goAddPage">新增</el-button>
-        </el-col>
-        <el-col class="btnrow2">
-          <span>任务模板名:</span>
-          <el-input class="searchInput"
-                    clearable
-                    placeholder="请输入任务模板名"
-                    prefix-icon="el-icon-search"
-                    @input="searchInputChange"
-                    v-model="modelNameSearch"> </el-input>
+          <el-button type="primary" @click="openDialog">下发任务</el-button>
         </el-col>
       </el-row>
 
       <!-- 任务列表 -->
-      <el-table :data="taskModelData.taskModelList"
-                border
-                highlight-current-row
-                :height="tableHeight">
-        <el-table-column label="任务模板名"
-                         width="260px"
-                         prop="taskModelName"></el-table-column>
-        <el-table-column label="点位">
-          <template slot-scope="scope">
-            {{scope.row.markList ? scope.row.markList.join(' , '):scope.row.markList}}
-          </template>
-        </el-table-column>
-        <el-table-column label="备注"
-                         prop="remark"></el-table-column>
+      <el-table :data="taskModelData" border highlight-current-row :height="tableHeight">
+        <el-table-column label="任务模板名" prop="templateName"></el-table-column>
         <!-- 操作区 -->
-        <el-table-column label="操作"
-                         width="230px"
-                         fixed="right">
+        <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="primary"
-                       size="mini"
-                       @click="showBindBoxNumDialog(scope.row)">派发</el-button>
-            <el-button type="primary"
-                       size="mini"
-                       @click="turnToEditTaskModel(scope.row)">修改</el-button>
-            <el-button type="danger"
-                       size="mini"
-                       @click="delTaskModel(scope.row)">删除</el-button>
+            <el-button type="primary" size="mini" @click="showBindBoxNumDialog(scope.row)">派发</el-button>
+            <el-button type="primary" size="mini" @click="turnToEditTaskModel(scope.row)">修改</el-button>
+            <el-button type="danger" size="mini" @click="delTaskModel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <!-- 分页区域 -->
-      <el-pagination @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange"
-                     :current-page="queryInfo.pagenum"
-                     :page-sizes="[10, 20, 50, 100]"
-                     :page-size="queryInfo.pagesize"
-                     layout="total, sizes, prev, pager, next, jumper"
-                     :total="total"></el-pagination>
-
     </el-card>
 
-    <!-- 任务派发的对话框 -->
-    <el-dialog title="箱号绑定"
-               :visible.sync="bindBoxNumDialogVisible"
-               width="630px">
-      <!-- content -->
-      <el-table :data="nodeList"
-                border
-                stripe
-                height="450px">
-        <el-table-column label="编号"
-                         prop="id"></el-table-column>
-        <el-table-column label="点位"
-                         prop="From"></el-table-column>
-        <el-table-column label="动作"
-                         prop="action">
-          <template slot-scope="scope">
-            <template v-if="scope.row.action == 'Get'">上料</template>
-            <template v-else-if="scope.row.action == 'Put'">下料</template>
-            <template v-else>无</template>
-          </template>
-        </el-table-column>
-        <el-table-column label="方向"
-                         prop="direction">
-          <template slot-scope="scope">
-            <template v-if="scope.row.direction == 'R'">右</template>
-            <template v-else-if="scope.row.direction == 'L'">左</template>
-          </template>
-        </el-table-column>
-        <el-table-column label="货架层数"
-                         prop="shelf_num"></el-table-column>
-        <el-table-column label="Fork层数"
-                         prop="fork_num"></el-table-column>
+    <el-dialog :title="title" :visible.sync="dialogVisible" width="70%" @close="closeDialog">
+      <el-dialog width="30%" title="请填写模板名称" :visible.sync="innerVisible" append-to-body>
+        <el-input v-model="templateName"></el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="innerVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveModel">确 定</el-button>
+        </span>
+      </el-dialog>
+      <el-row class="row1" :gutter="20" v-if="editShow">
+        <el-col :span="5">
+          <el-select v-model="select" placeholder="请选择">
+            <el-option v-for="item in selectList" :key="item.value" :label="item.name" :value="item.value"> </el-option>
+          </el-select>
+        </el-col>
+        <el-col v-if="select === 'groupId'" :span="5">
+          <el-select v-model="groupId" placeholder="请选择组">
+            <el-option v-for="item in groupList" :key="item.groupId" :label="item.groupName" :value="item.groupId"> </el-option>
+          </el-select>
+        </el-col>
+        <el-col v-if="select === 'agvId'" :span="5">
+          <el-select v-model="agvId" placeholder="请选择agv">
+            <el-option v-for="item in agvList" :key="item" :label="item" :value="item"> </el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" v-else>
+        <el-col :span="6">
+          <el-input v-model="templateName"></el-input>
+        </el-col>
+      </el-row>
+      <div class="line" v-for="(i, index) in actions" :key="index">
+        <div class="line-left">
 
-        <el-table-column label="箱号"
-                         prop="boxNum"
-                         width="100px">
-          <template slot-scope="scope">
-            <template v-if="scope.row.actionOrNot">
-              <el-input size="mini"
-                        v-model="scope.row.boxNum"></el-input>
-            </template>
-            <template v-else>
-              <el-input size="mini"
-                        :disabled="true"
-                        v-model="scope.row.boxNum"></el-input>
-            </template>
-
-          </template>
-
-        </el-table-column>
-
-      </el-table>
-      <!-- content -->
-
+        <el-radio v-model="checked" :label="index" @change="choose">
+          <div class="line1">
+            <div>请选择站点：</div>
+            <el-select v-model="actions[index].point" placeholder="请选择站点">
+              <el-option v-for="item in pointList" :key="item.workSiteId" :label="item.description" :value="item.workSiteId"> </el-option>
+            </el-select>
+          </div>
+        </el-radio>
+        </div>
+        <div class="line-right">
+          <div class="actions">请选择动作:</div>
+          <div class="line2">
+            <el-select v-model="actions[index].cmdList[index1]" placeholder="请选择动作" @change="val => chageValue(val, index1, index)" v-for="(tag, index1) in actions[index].cmdList" :key="index1">
+              <el-option v-for="item in actionList" :key="item.actionDescription" :label="item.actionDescription" :value="item.id"> </el-option>
+            </el-select>
+            <el-button type="primary" icon="el-icon-circle-plus-outline" @click="addAction(index)"></el-button>
+            <el-button type="danger" icon="el-icon-remove-outline" @click="delAction(index)"></el-button>
+          </div>
+        </div>
+      </div>
+        <el-button class="add_btn" type="primary" icon="el-icon-circle-plus-outline" @click="addPoint"></el-button>
+        <el-button type="danger" icon="el-icon-remove-outline" @click="delPoint"></el-button>
       <!-- 底部区 -->
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="bindBoxNumDialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="dispatchMission">派 发</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeDialog">取 消</el-button>
+        <el-button type="primary" @click="openName" v-if="addModel">保存为模板</el-button>
+        <el-button type="primary" @click="openName" v-if="editShow1">另存为模板</el-button>
+        <el-button type="primary" @click="sendTask" v-if="editShow">下 发</el-button>
+        <el-button type="primary" @click="editModel" v-else>保存</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       nodeList: [],
+      checked: '',
       // 控制bindBoxNum对话框的显示与隐藏
       bindBoxNumDialogVisible: false,
+      dialogVisible: false,
       // 凑数
       addTaskModelForm: {},
       // 派发表单
@@ -147,31 +109,210 @@ export default {
         pagenum: 1,
         pagesize: 10
       },
-      taskModelData: {},
+      taskModelData: [],
       // 列表总数
       total: 0,
       modelNameSearch: '',
       // 计时器
       timer: null,
+      title: '任务下发',
+      addModel: true,
 
       // 表格高度
       tableHeight: window.innerHeight * 0.7,
-
-
-
+      actionArgsList: [],
+      pointList: [],
+      actionList: [],
+      groupId: '',
+      agvId: '',
+      actions: [
+        {
+          point: '',
+          cmdList: ['']
+        }
+      ],
+      workSiteId: '',
+      actionName: '',
+      actionForm: {
+        point: '',
+        cmdList: ['']
+      },
+      j: 0,
+      groupList: [],
+      selectList: [
+        {
+          name: 'agv',
+          value: 'agvId'
+        },
+        {
+          name: '组',
+          value: 'groupId'
+        }
+      ],
+      select: '',
+      agvList: [],
+      editShow: true,
+      editShow1: false,
+      templateName: '',
+      innerVisible: false,
+      modelId: ''
     }
   },
-  created () {
-  },
-  mounted () {
+  created() {},
+  mounted() {
     this.getTaskModel()
   },
-  beforeDestroy () {
-  },
+  beforeDestroy() {},
   methods: {
+    async openDialog() {
+      this.title = '任务下发'
+      this.editShow = true
+      this.editShow1 = false
+      this.addModel = true
+      this.dialogVisible = true
+    },
+    choose(i) {
+      this.j = i
+    },
+    addAction(j) {
+      this.actions[j].cmdList.push('')
+    },
+    delAction(j) {
+      this.actions[j].cmdList.pop()
+    },
+    addPoint() {
+      this.actions.splice(this.j + 1, 0, {
+        point: '',
+        cmdList: ['']
+      })
+    },
+    delPoint() {
+      this.actions.splice(this.j, 1)
+    },
+    chageValue(value, index, j) {
+      this.actions[j].cmdList[index] = value
+    },
+    async sendTask() {
+      if (this.select === '' || this.actions[0].point === '' || this.actions[0].cmdList[0] === '') {
+        this.$message.info('请填写完整')
+      } else {
+        const yy = new Date().getFullYear()
+        const mm = new Date().getMonth() + 1
+        const dd = new Date().getDate()
+        const hh = new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours()
+        const mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
+        const ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
+        if (this.select === 'agvId') {
+          const { data: res } = await this.$http.post('/kr3/recvLiftTaskFromExternal', {
+            dispatchId: yy + '' + mm + '' + dd + '' + hh + '' + mf + '' + ss,
+            action: this.actions,
+            agvId: this.agvId
+          })
+          if (res.meta.status == 200) {
+            this.$message.success('任务下发成功')
+            this.actions = [
+              {
+                point: '',
+                cmdList: ['']
+              }
+            ]
+            this.select = ''
+            this.groupId = ''
+            this.agvId = ''
+            this.templateName = ''
+            this.dialogVisible = false
+          }
+        } else {
+          const { data: res } = await this.$http.post('/kr3/recvLiftTaskFromExternal', {
+            dispatchId: yy + '' + mm + '' + dd + '' + hh + '' + mf + '' + ss,
+            action: this.actions,
+            groupId: parseInt(this.groupId)
+          })
+          if (res.meta.status == 200) {
+            this.$message.success('任务下发成功')
+            this.actions = [
+              {
+                point: '',
+                cmdList: ['']
+              }
+            ]
+            this.select = ''
+            this.groupId = ''
+            this.agvId = ''
+            this.templateName = ''
+            this.dialogVisible = false
+          }
+        }
+      }
+    },
+    async editModel() {
+      const { data: res } = await this.$http.post('/templates/task/update', {
+        templateName: this.templateName,
+        action: this.actions,
+        id: this.modelId
+      })
+      if (res.meta.status == 200) {
+        this.$message.success('修改模板成功')
+        this.dialogVisible = false
+        this.actions = [
+          {
+            point: '',
+            cmdList: ['']
+          }
+        ]
+        this.select = ''
+        this.groupId = ''
+        this.agvId = ''
+        this.templateName = ''
+        this.getTaskModel()
+      } else {
+        this.$message.error('修改模板失败')
+      }
+    },
+    async saveModel() {
+      if (this.templateName === '') {
+        this.$message.info('请填写模板名')
+      } else {
+        const { data: res } = await this.$http.post('/templates/task', {
+          templateName: this.templateName,
+          action: this.actions
+        })
+        if (res.meta.status == 200) {
+          this.$message.success('新增任务模板成功')
+          this.innerVisible = false
+          this.dialogVisible = false
+          this.actions = [
+            {
+              point: '',
+              cmdList: ['']
+            }
+          ]
+          this.select = ''
+          this.groupId = ''
+          this.agvId = ''
+          this.templateName = ''
+          this.getTaskModel()
+        } else {
+          this.$message.error('新增模板失败')
+        }
+      }
+    },
+    closeDialog() {
+      this.actions = [
+        {
+          point: '',
+          cmdList: ['']
+        }
+      ]
+      this.select = ''
+      this.groupId = ''
+      this.agvId = ''
+      this.templateName = ''
+      this.dialogVisible = false
+    },
     // 获取任务状态列表
-    async getTaskModel () {
-      const { data: res } = await this.$http.get('taskModel', { params: this.queryInfo })
+    async getTaskModel() {
+      const { data: res } = await this.$http.get('/templates/task')
       if (res.meta.status !== 200) {
         // return this.$message.error(res.meta.msg)
         return this.$message({
@@ -180,32 +321,24 @@ export default {
           type: 'error'
         })
       }
-      this.taskModelData = res.data
-      this.total = res.data.total
-    },
-    // 监听pagesize改变的事件
-    handleSizeChange (newSize) {
-      // console.log(newSize)
-      this.queryInfo.pagesize = newSize
-      this.getTaskModel()
-    },
-    // 监听页码值改变的事件
-    handleCurrentChange (newPage) {
-      // console.log(newPage)
-      this.queryInfo.pagenum = newPage
-      this.getTaskModel()
-    },
-    // 检测搜索栏
-    searchInputChange () {
-      if (this.modelNameSearch !== '') {
-        this.queryInfo.query.taskModelName = this.modelNameSearch
-      } else {
-        this.queryInfo.query = {}
+      this.taskModelData = res.data.templateList
+      const { data: res1 } = await this.$http.get('/kr3/getTaskArgs')
+      if (res.meta.status == 200) {
+        this.pointList = res1.data.workSiteList
+        this.actionList = res1.data.actionArgsList
+        this.agvList = res1.data.agvIdList
+        this.groupList = res1.data.groupList
       }
-      this.getTaskModel()
+    },
+    openName() {
+      if (this.actions[0].point === '' || this.actions[0].cmdList[0] === '') {
+        this.$message.info('请填写完整')
+      } else {
+        this.innerVisible = true
+      }
     },
     // 判断是否admin page
-    isAdminPage () {
+    isAdminPage() {
       let path = window.location.href
       if (path.indexOf('admin') != -1) {
         return true
@@ -214,22 +347,23 @@ export default {
       }
     },
     // 跳转到添加页面
-    goAddPage () {
+    goAddPage() {
       this.$router.push('taskmodeladd')
     },
 
     // 跳转到编辑页面
-    turnToEditTaskModel (rowData) {
-      let isAdmin = this.isAdminPage()
-      if (isAdmin) {
-        this.$router.push({ name: 'adminTaskModelEdit', path: 'taskmodeledit', params: { rowData: rowData } })
-      } else {
-        this.$router.push({ name: 'taskModelEdit', path: 'taskmodeledit', params: { rowData: rowData } })
-      }
-
+    turnToEditTaskModel(row) {
+      this.title = '修改任务模板'
+      this.editShow = false
+      this.editShow1 = true
+      this.addModel = false
+      this.templateName = row.templateName
+      this.modelId = row.id
+      this.actions = row.action
+      this.dialogVisible = true
     },
     // 删除模板
-    async delTaskModel (rowData) {
+    async delTaskModel(row) {
       // 弹框提示用户是否删除信息
       const confirmResult = await this.$confirm('此操作将删除该模板, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -249,7 +383,7 @@ export default {
         })
       }
 
-      const { data: res } = await this.$http.delete('taskModel', { params: { id: rowData.id } })
+      const { data: res } = await this.$http.delete(`/templates/task/${row.id}`)
       if (res.meta.status != 200) {
         // return this.$message.error(res.meta.msg)
         return this.$message({
@@ -266,148 +400,19 @@ export default {
       })
       this.getTaskModel()
     },
-    // nodeList解码
-    nodeListDecode (taskData) {
-      let actionList = taskData.actionList
-      if (!actionList) return
-      let markList = taskData.markList
-      this.addTaskModelForm.taskModelName = taskData.taskModelName
-      this.addTaskModelForm.remark = taskData.remark
-
-      actionList.forEach((act, index) => {
-        if (act == '') {
-          let nodeRow = {}
-          nodeRow.From = markList[index]
-          nodeRow.action = ''
-          nodeRow.direction = ''
-          nodeRow.shelf_num = ''
-          nodeRow.fork_num = ''
-          nodeRow.Transfer_Obj_ID = ''
-          nodeRow.actionOrNot = false
-          nodeRow.boxNum = ''
-          nodeRow.waitOrNot = ''
-          this.nodeList.push(nodeRow)
-          return
-        }
-
-        let waitOrNot = act.substring(act.indexOf('(') - 1, act.indexOf('('))
-        let actNum = Number(act.substring(0, act.indexOf('(') - 1))
-        let actList = act.substring(act.indexOf('(') + 1, act.indexOf(')')).split(',')
-        for (let i = 0; i < actNum; i++) {
-          let nodeRow = {}
-          nodeRow.From = markList[index]
-          let action = ''
-          let direction = actList[i].substring(2, 3)
-          let shelf_num = actList[i].substring(3, 4)
-          let fork_num = actList[i].substring(4, 5)
-          let Transfer_Obj_ID = ''
-          if (actList[i].substring(1, 2) == 'G') {
-            action = 'Get'
-          } else if (actList[i].substring(1, 2) == 'P') {
-            action = 'Put'
-          }
-          if (actList[i].substring(5, 6) == 'E') {
-            Transfer_Obj_ID = 'Express'
-          } else if (actList[i].substring(5, 6) == 'R') {
-            Transfer_Obj_ID = 'Rack'
-          }
-
-          nodeRow.waitOrNot = waitOrNot
-          nodeRow.action = action
-          nodeRow.direction = direction
-          nodeRow.shelf_num = shelf_num
-          nodeRow.fork_num = fork_num
-          nodeRow.Transfer_Obj_ID = Transfer_Obj_ID
-          nodeRow.actionOrNot = true
-          nodeRow.boxNum = ''
-          this.nodeList.push(nodeRow)
-        }
-      })
-
-      this.nodeList.forEach((node, index) => {
-        node.id = index
-      })
-    },
-    // 报文格式编码
-    submitMsgEncode () {
-      this.submitForm = {
-        dispatchId: '',
-        taskModelName: '',
-        actionList: [],
-        markList: [],
-        remark: ''
-      }
-
-      this.submitForm.dispatchId = (new Date()).getTime()
-
-      this.nodeList.forEach(node => {
-        let nodeWait = node.waitOrNot
-        let nodeAct = node.action.substring(0, 1)
-        let nodeDirection = node.direction
-        let nodeShelf_num = node.shelf_num
-        let nodeFork_num = node.fork_num
-        let nodeShelfCate = node.Transfer_Obj_ID.substring(0, 1)
-        let nodeBoxNum = node.boxNum == '' ? '000000' : node.boxNum
-        let actCommand = '_' + nodeAct + nodeDirection + nodeShelf_num + nodeFork_num + nodeShelfCate + '_000000_' + nodeBoxNum
-        let markListLen = this.submitForm.markList.length
-        if (markListLen == 0) {
-          this.submitForm.markList.push(node.From)
-          let actCommandRes = ''
-          if (node.actionOrNot) {
-            actCommandRes = '1' + nodeWait + '(' + actCommand + ')'
-          }
-          this.submitForm.actionList.push(actCommandRes)
-        } else {
-          let lastPoint = this.submitForm.markList[markListLen - 1]
-          if (node.From == lastPoint) {
-            // 后空
-            if (!node.actionOrNot) return
-            let lastActCommand = this.submitForm.actionList[markListLen - 1]
-            // 前空
-            if (lastActCommand.trim() == '') {
-              let actCommandRes = '1' + nodeWait + '(' + actCommand + ')'
-              this.submitForm.actionList[markListLen - 1] = actCommandRes
-            } else {
-              let lastWait = lastActCommand.substring(lastActCommand.indexOf('(') - 1, lastActCommand.indexOf('('))
-              if (nodeWait == 'W') {
-                lastWait = 'W'
-              }
-              let lastActNum = Number(lastActCommand.substring(0, lastActCommand.indexOf('(') - 1))
-              let lastAct = lastActCommand.substring(lastActCommand.indexOf('(') + 1, lastActCommand.indexOf(')'))
-              let actCommandRes = (lastActNum + 1) + lastWait + '(' + lastAct + ',' + actCommand + ')'
-              this.submitForm.actionList[markListLen - 1] = actCommandRes
-            }
-
-          } else {
-            this.submitForm.markList.push(node.From)
-            let actCommandRes = ''
-            if (node.actionOrNot) {
-              actCommandRes = '1' + nodeWait + '(' + actCommand + ')'
-            }
-            this.submitForm.actionList.push(actCommandRes)
-          }
-
-        }
-      })
-    },
     // 箱号绑定框打开
-    showBindBoxNumDialog (rowData) {
-      if (rowData.actionList.length === 0) {
-        // return this.$message.error('任务列表不能为空')
-        return this.$message({
-          showClose: true,
-          message: '任务列表不能为空',
-          type: 'error'
-        })
-
-      }
-      this.nodeList = []
-      this.submitForm = {}
-      this.nodeListDecode(rowData)
-      this.bindBoxNumDialogVisible = true
+    showBindBoxNumDialog(row) {
+      this.title = '下发任务'
+      this.editShow = true
+      this.editShow1 = false
+      this.addModel = false
+      this.templateName = row.templateName
+      this.modelId = row.id
+      this.actions = row.action
+      this.dialogVisible = true
     },
     // 任务派发
-    async dispatchMission (taskModel) {
+    async dispatchMission(taskModel) {
       // 弹框提示用户是否删除信息
       const confirmResult = await this.$confirm('此操作将派发该任务, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -454,15 +459,12 @@ export default {
       })
       this.bindBoxNumDialogVisible = false
       this.getTaskModel()
+    }
 
-    },
-
-
-    // 
-    // 
-    // 
-  },
-
+    //
+    //
+    //
+  }
 
   //
   //
@@ -470,6 +472,57 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.row1 {
+  margin: 5px;
+}
+.el-radio {
+  display: flex;
+}
+/deep/.el-dialog__body {
+  overflow: scroll;
+  overflow-x: hidden;
+  height: 500px;
+}
+/deep/ .el-radio__input {
+  display: flex;
+  align-items: center;
+}
+.line {
+  display: flex;
+  align-items: center;
+  .line-left {
+    flex: 1;
+  }
+  .line-right {
+    flex: 3;
+    display: flex;
+    align-items: center;
+  }
+  .actions {
+    margin-right: 10px;
+    flex: 1;
+  }
+  .line1 {
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    div {
+      margin-right: 10px;
+    }
+  }
+  .line2 {
+    flex: 8;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    .el-select {
+      margin: 5px;
+    }
+  }
+}
+.add_btn {
+  margin: 5px;
+}
 .searchInput {
   width: 200px;
 }

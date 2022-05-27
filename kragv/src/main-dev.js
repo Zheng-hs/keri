@@ -7,6 +7,12 @@ import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
 import axios from 'axios'
 // import 'element-ui/lib/theme-chalk/display.css'
+import {
+  Radio
+} from 'element-ui';
+
+Vue.use(Radio)
+
 
 Vue.config.productionTip = false
 

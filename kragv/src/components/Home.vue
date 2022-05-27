@@ -3,74 +3,76 @@
     <!-- 头部 -->
     <el-header>
       <div class="header-right">
-        <img id="logoImg"
-             src="../assets/logo.png" />
+        <img id="logoImg" src="../assets/logo.png" />
       </div>
 
       <div class="header-center-left"></div>
 
       <div class="header-center-right">
         <!-- 菜单 -->
-        <el-menu mode="horizontal"
-                 background-color="rgba(1, 1, 1, 0)"
-                 text-color="rgba(255,255,255,0.65)"
-                 active-text-color="#fff"
-                 router
-                 :default-active="activePath"
-                 :default-openeds="activeSubmenu">
+        <el-menu
+          mode="horizontal"
+          background-color="rgba(1, 1, 1, 0)"
+          text-color="rgba(255,255,255,0.65)"
+          active-text-color="#fff"
+          router
+          :default-active="activePath"
+          :default-openeds="activeSubmenu"
+        >
           <!-- 首页菜单 -->
-          <el-menu-item index="/map"
-                        @click="saveNavState('/map')">
+          <el-menu-item index="/map" @click="saveNavState('/map')">
             <!-- 文本 -->
             <span>首页</span>
           </el-menu-item>
 
           <!-- 车辆状态 -->
-          <el-menu-item index="/agvlist"
-                        @click="saveNavState('/agvlist')">
+          <el-menu-item index="/agvlist" @click="saveNavState('/agvlist')">
             <!-- 文本 -->
             <span>车辆状态</span>
           </el-menu-item>
 
           <!-- 任务状态 -->
-          <el-menu-item index="/tasklist"
-                        @click="saveNavState('/tasklist')">
+          <el-menu-item index="/tasklist" @click="saveNavState('/tasklist')">
             <!-- 文本 -->
             <span>任务状态</span>
           </el-menu-item>
 
           <!-- 交管状态 -->
-          <el-menu-item index="/trafficcontrollist"
-                        @click="saveNavState('/trafficcontrollist')">
+          <el-menu-item index="/trafficcontrollist" @click="saveNavState('/trafficcontrollist')">
             <!-- 文本 -->
             <span>交管状态</span>
           </el-menu-item>
 
-          <el-menu-item index="/taskmodel"
-                        @click="saveNavState('/taskmodel')">
+          <el-menu-item index="/taskmodel" @click="saveNavState('/taskmodel')">
             <!-- 文本 -->
             <span>任务派发</span>
           </el-menu-item>
 
-          <el-menu-item index="/taskmodelPlus"
-                        @click="saveNavState('/taskmodelPlus')">
-            <!-- 文本 -->
+          <!-- <el-menu-item index="/taskmodelPlus" @click="saveNavState('/taskmodelPlus')">
             <span>流水线任务派发</span>
-          </el-menu-item>
+          </el-menu-item> -->
 
-          <el-menu-item index="/user"
-                        @click="saveNavState('/user')"
-                        v-if="currentAuthority == 99">
+          <el-menu-item index="/action" @click="saveNavState('/action')">
+            <!-- 文本 -->
+            <span>动作管理</span>
+          </el-menu-item>
+          <el-menu-item index="/group" @click="saveNavState('/group')">
+            <!-- 文本 -->
+            <span>工作组管理</span>
+          </el-menu-item>
+          <el-menu-item index="/taskname" @click="saveNavState('/taskname')">
+            <!-- 文本 -->
+            <span>站点管理</span>
+          </el-menu-item>
+          <el-menu-item index="/user" @click="saveNavState('/user')" v-if="currentAuthority == 99">
             <!-- 文本 -->
             <span>用户管理</span>
           </el-menu-item>
-
         </el-menu>
         <!-- 菜单 -->
       </div>
 
       <div class="header-right">
-
         <!-- 搜索 -->
         <!-- 图标 -->
         <!-- <el-link :underline="false"
@@ -92,27 +94,20 @@
 
         <!-- 问号 -->
 
-        <el-link :underline="false"
-                 v-if="!isMobile"
-                 @click="sysInfoDrawerOpen"
-                 :before-close="sysInfoDrawerClose">
+        <el-link :underline="false" v-if="!isMobile" @click="sysInfoDrawerOpen" :before-close="sysInfoDrawerClose">
           <el-badge :is-dot="sysInfoAlarm">
             <i class="el-icon-message-solid"></i>
           </el-badge>
         </el-link>
 
         <!-- 信息 -->
-        <el-link :underline="false"
-                 @click="userTipsVisible=true"
-                 v-if="!isMobile">
+        <el-link :underline="false" @click="userTipsVisible = true" v-if="!isMobile">
           <i class="el-icon-info"></i>
         </el-link>
 
         <!-- 全屏按钮 -->
-        <el-link :underline="false"
-                 v-if="!isMobile">
-          <i class="el-icon-full-screen"
-             @click="toggleFullscreen"></i>
+        <el-link :underline="false" v-if="!isMobile">
+          <i class="el-icon-full-screen" @click="toggleFullscreen"></i>
         </el-link>
 
         <!-- 头像下拉框 -->
@@ -123,12 +118,9 @@
             <i class="el-icon-caret-bottom"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-house"
-                              @click.native="avatarToWelcome">首页</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-house" @click.native="avatarToWelcome">首页</el-dropdown-item>
             <!-- <el-dropdown-item disabled>双皮奶</el-dropdown-item> -->
-            <el-dropdown-item divided
-                              icon="el-icon-right"
-                              @click.native="logout">退出登录</el-dropdown-item>
+            <el-dropdown-item divided icon="el-icon-right" @click.native="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
 
@@ -136,10 +128,9 @@
                      @click="logout">退出</el-button>
           <i class="el-icon-caret-bottom"></i> -->
       </div>
-
     </el-header>
     <!-- 主体 -->
-    <el-main :class="{mobileClass:isMobile}">
+    <el-main :class="{ mobileClass: isMobile }">
       <router-view></router-view>
     </el-main>
     <!-- <el-footer>
@@ -151,15 +142,9 @@
 
     <!-- 系统告警信息栏 -->
     <template>
-      <el-drawer title="消息"
-                 :visible.sync="sysInfoDrawerVisible"
-                 :direction="sysInfoDrawerDirection">
+      <el-drawer title="消息" :visible.sync="sysInfoDrawerVisible" :direction="sysInfoDrawerDirection">
         <el-card>
-          <el-table :data="systemInfoCardData"
-                    stripe
-                    :show-header="false"
-                    :height="sysInfoHeight"
-                    style="width: 100%">
+          <el-table :data="systemInfoCardData" stripe :show-header="false" :height="sysInfoHeight" style="width: 100%">
             <!-- <el-table-column prop="time"
                              label="时间">
             </el-table-column>
@@ -168,8 +153,8 @@
             </el-table-column> -->
             <el-table-column label="动作清单">
               <template slot-scope="scope">
-                <p>{{ scope.row.time}} : </p>
-                <p style="font-size:15px;">{{ scope.row.info}}</p>
+                <p>{{ scope.row.time }} :</p>
+                <p style="font-size:15px;">{{ scope.row.info }}</p>
               </template>
             </el-table-column>
           </el-table>
@@ -179,20 +164,12 @@
     <!-- 系统告警信息栏 -->
 
     <!-- 用户手册 -->
-    <el-dialog title="操作提示"
-               :visible.sync="userTipsVisible"
-               width="60%">
+    <el-dialog title="操作提示" :visible.sync="userTipsVisible" width="60%">
       <!-- 内容主体区 -->
-      <el-carousel height="60vh"
-                   indicator-position="outside">
-        <el-carousel-item interval=5
-                          v-for="item in userTipsImgUrlList"
-                          :key="item">
-          <el-image :src="item"
-                    style=" height: 100%;"
-                    fit="contain">
-            <div slot="error"
-                 class="image-slot">
+      <el-carousel height="60vh" indicator-position="outside">
+        <el-carousel-item interval="5" v-for="item in userTipsImgUrlList" :key="item">
+          <el-image :src="item" style=" height: 100%;" fit="contain">
+            <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>
             </div>
           </el-image>
@@ -201,16 +178,14 @@
       <!-- 内容主体区 -->
     </el-dialog>
     <!-- 用户手册 -->
-
   </el-container>
-
 </template>
 
 <script>
 import screenfull from 'screenfull'
 
 export default {
-  data () {
+  data() {
     return {
       // 左侧菜单数据
       menulist: [],
@@ -234,14 +209,18 @@ export default {
       sysInfoDrawerDirection: 'rtl',
       // sysInfo height
       sysInfoHeight: window.innerHeight * 0.8,
-      systemInfoCardData: [{
-        time: '',
-        info: ''
-      }],
-      systemInfoCardDataHistory: [{
-        time: '',
-        info: ''
-      }],
+      systemInfoCardData: [
+        {
+          time: '',
+          info: ''
+        }
+      ],
+      systemInfoCardDataHistory: [
+        {
+          time: '',
+          info: ''
+        }
+      ],
       // 信息提示红点
       sysInfoAlarm: false,
       // 公告栏计时器
@@ -255,20 +234,19 @@ export default {
         require('../assets/tipImg/tip02.jpg'),
         require('../assets/tipImg/tip03.jpg'),
         require('../assets/tipImg/tip04.jpg'),
-        require('../assets/tipImg/tip05.jpg'),
-      ],
-
+        require('../assets/tipImg/tip05.jpg')
+      ]
     }
   },
-  created () {
+  created() {
     // this.getMenuList()
     this.activePath = window.sessionStorage.getItem('activePath')
     this.handleMobile()
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.cleanTimer()
   },
-  mounted () {
+  mounted() {
     window.onresize = () => {
       // 全屏下监控是否按键了ESC
       if (!this.checkFull()) {
@@ -279,21 +257,21 @@ export default {
     this.sysInfoAlarmInit()
   },
   methods: {
-    cleanTimer () {
+    cleanTimer() {
       clearInterval(this.sysInfotimer)
       this.sysInfotimer = null
       clearInterval(this.sysInfoAlarmtimer)
       this.sysInfoAlarmtimer = null
     },
     // 判断是否移动端
-    handleMobile () {
+    handleMobile() {
       if (window.innerWidth < 1024) {
         this.isCollapse = true
         this.isMobile = true
       }
     },
     // 登出
-    logout () {
+    logout() {
       window.sessionStorage.clear()
       this.$router.push('/login')
     },
@@ -304,7 +282,7 @@ export default {
     //   console.log(res)
     // },
     // 点击按钮切换菜单的折叠与展开
-    toggleCollapse () {
+    toggleCollapse() {
       this.isCollapse = !this.isCollapse
       if (this.isCollapse) {
         this.collapseIcon = 'el-icon-s-unfold'
@@ -312,23 +290,23 @@ export default {
         this.collapseIcon = 'el-icon-s-fold'
       }
     },
-    saveNavState (activePath) {
+    saveNavState(activePath) {
       window.sessionStorage.setItem('activePath', activePath)
       this.activePath = activePath
     },
     // 头像框首页
-    avatarToWelcome () {
+    avatarToWelcome() {
       this.saveNavState('/map')
       this.$router.push('/map')
     },
     // 全屏按钮
-    toggleFullscreen () {
+    toggleFullscreen() {
       screenfull.toggle()
     },
     /**
      * 全屏事件
      */
-    screenfull () {
+    screenfull() {
       if (!screenfull.enabled) {
         this.$message({
           message: 'Your browser does not work',
@@ -342,7 +320,7 @@ export default {
     /**
      * 是否全屏并按键ESC键的方法
      */
-    checkFull () {
+    checkFull() {
       var isFull = document.fullscreenEnabled || window.fullScreen || document.webkitIsFullScreen || document.msFullscreenEnabled
       // to fix : false || undefined == undefined
       if (isFull === undefined) {
@@ -351,20 +329,20 @@ export default {
       return isFull
     },
     // 控制搜索框的显示与隐藏
-    async handleHeaderSearchVisiable () {
+    async handleHeaderSearchVisiable() {
       // let wait = ms => new Promise(resolve => setTimeout(resolve, ms))
       this.headerSearchVisiable = !this.headerSearchVisiable
       // console.log(this.headerSearchVisiable)
       // 如果方法不生效，可能是input元素还没有渲染出来，可通过setTimeout等待一下
       if (this.headerSearchVisiable) {
         const _this = this
-        setTimeout(function () {
+        setTimeout(function() {
           _this.$refs.headerSearchRef.focus()
         }, 1)
       }
     },
     // Alarm红点提示
-    async setSysInfoAlarmRed () {
+    async setSysInfoAlarmRed() {
       const { data: res } = await this.$http.get('getSystemInfo')
       if (res.meta.status == 200) {
         let systemInfo = window.sessionStorage.getItem('systemInfo')
@@ -374,17 +352,15 @@ export default {
           this.sysInfoAlarm = false
         }
         this.systemInfoCardData = res.data.systemInfo
-
       }
-
     },
     // 告警红点初始化
-    sysInfoAlarmInit () {
+    sysInfoAlarmInit() {
       this.setSysInfoAlarmRed()
-      this.sysInfoAlarmtimer = setInterval(this.setSysInfoAlarmRed, 1000 * 20);
+      this.sysInfoAlarmtimer = setInterval(this.setSysInfoAlarmRed, 1000 * 20)
     },
     // 获取公告栏信息
-    async getSystemInfo () {
+    async getSystemInfo() {
       if (this.sysInfoDrawerVisible == false) return
       const { data: res } = await this.$http.get('getSystemInfo')
       if (res.meta.status == 200) {
@@ -392,31 +368,28 @@ export default {
         // this.systemInfoCardDataHistory = res.data.systemInfo
         window.sessionStorage.setItem('systemInfo', JSON.stringify(res.data.systemInfo))
       }
-
     },
     // 消息栏打开
-    sysInfoDrawerOpen () {
+    sysInfoDrawerOpen() {
       this.sysInfoDrawerVisible = true
       this.sysInfoAlarm = false
       this.getSystemInfo()
       this.sysInfotimer = setInterval(this.getSystemInfo, 10000)
     },
     // 消息栏关闭
-    sysInfoDrawerClose () {
+    sysInfoDrawerClose() {
       clearInterval(this.sysInfotimer)
       this.sysInfotimer = null
-    },
-
+    }
   },
   computed: {
-    currentUser () {
+    currentUser() {
       return window.sessionStorage.getItem('currentUser')
     },
-    currentAuthority () {
+    currentAuthority() {
       return window.sessionStorage.getItem('power')
     }
-
-  },
+  }
 }
 </script>
 
@@ -499,7 +472,7 @@ export default {
 // 中部导航栏
 .header-center-right {
   // width: 550px;
-  width: 690px;
+  width: 1000px;
   // float: right !important;
   .el-menu {
     // background-color: rgba(1, 1, 1, 0);
@@ -518,11 +491,12 @@ export default {
   }
 
   // 鼠标滑过菜单的字体颜色
+
+
   .el-menu-item:hover i,
   .el-menu-item:hover span {
     color: #fff !important;
   }
-
   // 鼠标滑过菜单背景颜色
   .el-menu-item:hover {
     background-color: rgba(1, 1, 1, 0) !important;

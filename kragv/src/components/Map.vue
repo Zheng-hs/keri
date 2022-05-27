@@ -1,105 +1,67 @@
 <template>
   <el-row :gutter="20">
     <el-col>
-      <el-card id="mapCard"
-               v-loading="loading">
+      <el-card id="mapCard" v-loading="loading">
         <!-- 地图 -->
-        <svg xmlns="http://www.w3.org/2000/svg"
-             viewBox="0 0 800.0 600.0"
-             id="svgMap"
-             :height="mapHeight<750?'750px':mapHeight"
-             width="100%"></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800.0 600.0" id="svgMap" :height="mapHeight < 750 ? '750px' : mapHeight" width="100%"></svg>
 
         <!-- 搜索框 -->
-        <div id="searchMapArea"
-             style="margin-top: 15px;">
-          <el-input placeholder="请输入内容"
-                    v-model="searchContent"
-                    id="searchInput">
-            <el-select v-model="searchSelect"
-                       slot="prepend"
-                       placeholder="请选择">
-              <el-option v-for="item in searchOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
+        <div id="searchMapArea" style="margin-top: 15px;">
+          <el-input placeholder="请输入内容" v-model="searchContent" id="searchInput">
+            <el-select v-model="searchSelect" slot="prepend" placeholder="请选择">
+              <el-option v-for="item in searchOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
             </el-select>
-            <el-button slot="append"
-                       icon="el-icon-search"
-                       @click="locateSearchObject"></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="locateSearchObject"></el-button>
           </el-input>
         </div>
 
+        <!-- <div>
+          <el-checkbox v-model="checked" @change="pointName">备选项</el-checkbox>
+        </div> -->
+
         <!-- agv信息面板 -->
         <template v-if="agvInfoCardVissble">
-          <el-card class="box-card"
-                   id="agvInfoCard"
-                   body-style="padding-top:0px;padding-bottom:5px;">
+          <el-card class="box-card" id="agvInfoCard" body-style="padding-top:0px;padding-bottom:5px;">
             <!-- 头部 -->
-            <div slot="header"
-                 class="clearfix">
-              <span>{{agvClicked}}</span>
-              <el-button size="medium"
-                         :plain="true"
-                         @click="agvInfoCardClose"
-                         style="float: right; padding: 3px 0; font-size:10px;">
+            <div slot="header" class="clearfix">
+              <span>{{ agvClicked }}</span>
+              <el-button size="medium" :plain="true" @click="agvInfoCardClose" style="float: right; padding: 3px 0; font-size:10px;">
                 <i class="el-icon-close"></i>
               </el-button>
             </div>
             <!-- 内容 -->
             <template>
-              <el-carousel :interval="10000"
-                           height="330px"
-                           indicator-position="none"
-                           :autoplay="false">
+              <el-carousel :interval="10000" height="330px" indicator-position="none" :autoplay="false">
                 <!-- 上线 + 电量 -->
                 <el-carousel-item>
                   <div class="mainPlate">
                     <el-row :gutter="24">
-                      <el-col :span="12"
-                              class="mainPlateCol">
+                      <el-col :span="12" class="mainPlateCol">
                         <!-- 在线状态 -->
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">连接状态</div>
                           <div>
-                            <el-result :icon="agvClickedInfo.onLine=='on'?'success':'info'"
-                                       :sub-title="agvClickedInfo.onLine=='on'?'在线':'离线'">
-                            </el-result>
+                            <el-result :icon="agvClickedInfo.onLine == 'on' ? 'success' : 'info'" :sub-title="agvClickedInfo.onLine == 'on' ? '在线' : '离线'"> </el-result>
                           </div>
-
                         </el-card>
                         <!-- 在线状态 -->
                         <!-- 电量 -->
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">电量</div>
                           <div>
-                            <el-progress :color="agvClickedInfo.batteryLevel >=30?'rgb(19, 206, 102)':'rgb(255, 73, 73)'"
-                                         type="circle"
-                                         :width="80"
-                                         :percentage="agvClickedInfo.batteryLevel">
+                            <el-progress :color="agvClickedInfo.batteryLevel >= 30 ? 'rgb(19, 206, 102)' : 'rgb(255, 73, 73)'" type="circle" :width="80" :percentage="agvClickedInfo.batteryLevel">
                             </el-progress>
                           </div>
-
                         </el-card>
                         <!-- 电量 -->
-
                       </el-col>
-                      <el-col :span="12"
-                              class="mainPlateCol">
+                      <el-col :span="12" class="mainPlateCol">
                         <!-- 速度 -->
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">速度</div>
                           <div>
-                            <el-progress :color="colors"
-                                         type="dashboard"
-                                         :width="80"
-                                         :percentage="handleSpeedDashboard(agvClickedInfo.speed)"
-                                         :format="speedDashboardFormat">
-
-                            </el-progress>
+                            <el-progress :color="colors" type="dashboard" :width="80" :percentage="handleSpeedDashboard(agvClickedInfo.speed)" :format="speedDashboardFormat"> </el-progress>
                           </div>
-
                         </el-card>
                         <!-- 速度 -->
 
@@ -107,21 +69,13 @@
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">运动状态</div>
                           <div>
-                            <el-progress :color="agvClickedInfo.moveStatus =='Run'?'#67C23A':'#E6A23C'"
-                                         type="circle"
-                                         :width="80"
-                                         :percentage="100"
-                                         :format="moveStatusDashboardFormat">
-
+                            <el-progress :color="agvClickedInfo.moveStatus == 'Run' ? '#67C23A' : '#E6A23C'" type="circle" :width="80" :percentage="100" :format="moveStatusDashboardFormat">
                             </el-progress>
                           </div>
-
                         </el-card>
                         <!-- 车体状态 -->
-
                       </el-col>
                     </el-row>
-
                   </div>
 
                   <!-- <el-progress :class="agvClickedInfo.batteryLevel >=30?'batteryGreen':'batteryRed'"
@@ -135,88 +89,51 @@
                 <el-carousel-item>
                   <div class="mainPlate">
                     <el-row :gutter="24">
-                      <el-col :span="12"
-                              class="mainPlateCol">
+                      <el-col :span="12" class="mainPlateCol">
                         <!-- 车辆区域 -->
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">所属区域</div>
-                          <el-progress color="#67C23A"
-                                       type="circle"
-                                       :width="80"
-                                       :percentage="100"
-                                       :format="agvAreaDashboardFormat">
-
-                          </el-progress>
-
+                          <el-progress color="#67C23A" type="circle" :width="80" :percentage="100" :format="agvAreaDashboardFormat"> </el-progress>
                         </el-card>
                         <!-- 车辆区域 -->
                         <!-- 当前卡号 -->
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">当前位置</div>
                           <div>
-                            <el-progress :color="agvClickedInfo.now !='0'?'#409EFF':'#E6A23C'"
-                                         type="circle"
-                                         :width="80"
-                                         :percentage="100"
-                                         :format="cardNowStatusDashboardFormat">
-
-                            </el-progress>
+                            <el-progress :color="agvClickedInfo.now != '0' ? '#409EFF' : '#E6A23C'" type="circle" :width="80" :percentage="100" :format="cardNowStatusDashboardFormat"> </el-progress>
                           </div>
                         </el-card>
                         <!-- 当前卡号 -->
                       </el-col>
-                      <el-col :span="12"
-                              class="mainPlateCol">
+                      <el-col :span="12" class="mainPlateCol">
                         <!-- 载货率 -->
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">载货率</div>
                           <div>
-                            <el-progress :color="colors"
-                                         type="circle"
-                                         :width="80"
-                                         :percentage="boxInForkPercent(agvClickedInfo.loading)">
-                            </el-progress>
+                            <el-progress :color="colors" type="circle" :width="80" :percentage="boxInForkPercent(agvClickedInfo.loading)"> </el-progress>
                           </div>
-
                         </el-card>
                         <!-- 载货率 -->
                         <!-- 任务进度 -->
                         <el-card :body-style="agvInfoMiniCardStyle">
                           <div class="mainCardTitle">任务进度</div>
                           <div>
-                            <el-progress :color="colors"
-                                         type="dashboard"
-                                         :width="80"
-                                         :percentage="taskDonePercent(agvClickedInfo)"
-                                         :format="taskDonePercentFormat">
-                            </el-progress>
-
+                            <el-progress :color="colors" type="dashboard" :width="80" :percentage="taskDonePercent(agvClickedInfo)" :format="taskDonePercentFormat"> </el-progress>
                           </div>
-
                         </el-card>
                         <!-- 任务进度 -->
                       </el-col>
                     </el-row>
                   </div>
-
                 </el-carousel-item>
                 <!-- 装箱情况 + 卡号 -->
 
                 <!-- 装箱情况 -->
                 <el-carousel-item>
                   <template>
-                    <el-table :data="agvForkList"
-                              max-height='320px'
-                              :row-style='forkLayerExistBoxOrNot'
-                              style="width: 100%">
-                      <el-table-column prop="layerName"
-                                       label="Fork储位"
-                                       width="130">
-                      </el-table-column>
-                      <el-table-column prop="boxNum"
-                                       label="箱号"
-                                       width="130">
-                      </el-table-column>
+                    <el-table :data="agvForkList" max-height="320px" :row-style="forkLayerExistBoxOrNot" style="width: 100%">
+                      <el-table-column prop="layerName" label="Fork储位" width="130"> </el-table-column>
+                      <el-table-column prop="boxNum" label="箱号" width="130"> </el-table-column>
                     </el-table>
                   </template>
                 </el-carousel-item>
@@ -227,19 +144,9 @@
                 <!-- 详细数据 -->
                 <el-carousel-item>
                   <template>
-                    <el-table :data="agvInfoCardData"
-                              stripe
-                              :show-header="false"
-                              max-height='320px'
-                              style="width: 100%">
-                      <el-table-column prop="agvValue"
-                                       label="参数名"
-                                       width="130">
-                      </el-table-column>
-                      <el-table-column prop="agvKey"
-                                       label="参数"
-                                       width="110">
-                      </el-table-column>
+                    <el-table :data="agvInfoCardData" stripe :show-header="false" max-height="320px" style="width: 100%">
+                      <el-table-column prop="agvValue" label="参数名" width="130"> </el-table-column>
+                      <el-table-column prop="agvKey" label="参数" width="110"> </el-table-column>
                     </el-table>
                   </template>
                 </el-carousel-item>
@@ -255,53 +162,30 @@
 
         <!-- agv左侧信息面板 -->
         <template v-if="agvLeftInfoCardVisible">
-          <el-card class="box-card"
-                   id="agvLeftInfoCard">
+          <el-card class="box-card" id="agvLeftInfoCard">
             <!-- 头部 -->
-            <div slot="header"
-                 class="clearfix">
-              <span>{{agvClicked}} 任务步骤</span>
-              <el-button size="medium"
-                         :plain="true"
-                         @click="agvLeftInfoCardClose"
-                         style="float: right; padding: 3px 0; font-size:10px;">
+            <div slot="header" class="clearfix">
+              <span>{{ agvClicked }} 任务步骤</span>
+              <el-button size="medium" :plain="true" @click="agvLeftInfoCardClose" style="float: right; padding: 3px 0; font-size:10px;">
                 <i class="el-icon-close"></i>
               </el-button>
-
             </div>
             <!-- 内容 -->
             <template>
-
-              <el-table :data="taskScheduleCardData"
-                        stripe
-                        :show-header="false"
-                        style="width: 100%"
-                        max-height='200px'>
-                <el-table-column style="width: 100%"
-                                 label="任务进度">
+              <el-table :data="taskScheduleCardData" stripe :show-header="false" style="width: 100%" max-height="200px">
+                <el-table-column style="width: 100%" label="任务进度">
                   <template slot-scope="scope">
-
-                    <template v-if="scope.row.taskActionList.length ==0">
-                      <el-result icon="info"
-                                 title="信息提示"
-                                 subTitle="AGV空闲中">
-                        <template slot="extra">
-
-                        </template>
+                    <template v-if="scope.row.taskActionList.length == 0">
+                      <el-result icon="info" title="信息提示" subTitle="AGV空闲中">
+                        <template slot="extra"> </template>
                       </el-result>
                     </template>
                     <template v-else>
-                      {{scope.row.taskId}}
-                      <el-steps :active="scope.row.taskActionIndex"
-                                direction="vertical"
-                                finish-status="success">
-                        <el-step v-for="(item , i) in scope.row.taskActionList"
-                                 :key='i'
-                                 :title="item.pointId.toString()"
-                                 :description="translateAction(item) "></el-step>
+                      {{ scope.row.taskId }}
+                      <el-steps :active="scope.row.taskActionIndex" direction="vertical" finish-status="success">
+                        <el-step v-for="(item, i) in scope.row.taskActionList" :key="i" :title="item.pointId.toString()" :description="translateAction(item)"></el-step>
                       </el-steps>
                     </template>
-
                   </template>
                 </el-table-column>
               </el-table>
@@ -311,95 +195,60 @@
         </template>
         <!-- agv左侧信息面板 -->
 
+        <!-- 切换楼层按钮 -->
+        <div class="floor-btn">
+          <el-button type="info" size="mini" :plain="floor3" @click="choose3f">3F</el-button>
+          <el-button type="info" size="mini" :plain="floor4" @click="choose4f">4F</el-button>
+          <el-button type="info" size="mini" :plain="floor5" @click="choose5f">5F</el-button>
+        </div>
+        <!-- 切换楼层按钮 -->
+
         <!-- 地图放大缩小按钮 -->
         <div id="btn-area">
-          <el-button id="scale-up"
-                     size='mini'
-                     @click="svgPanZoomScaleUp"
-                     icon="el-icon-plus"></el-button>
+          <el-button id="scale-up" size="mini" @click="svgPanZoomScaleUp" icon="el-icon-plus"></el-button>
 
           <div></div>
-          <el-button id="scale-down"
-                     @click="svgPanZoomScaleDown"
-                     size='mini'
-                     icon="el-icon-minus"></el-button>
+          <el-button id="scale-down" @click="svgPanZoomScaleDown" size="mini" icon="el-icon-minus"></el-button>
 
           <div></div>
-          <el-button id="reset-btn"
-                     @click="svgPanZoomReset"
-                     size='mini'
-                     icon="el-icon-location-outline"></el-button>
-
+          <el-button id="reset-btn" @click="svgPanZoomReset" size="mini" icon="el-icon-location-outline"></el-button>
         </div>
         <!-- 地图放大缩小按钮 -->
 
         <!-- 左下角菜单功能按钮区 -->
-        <div class="menuBtnArea"
-             @click="menuBtnVisible = !menuBtnVisible">
-
+        <div class="menuBtnArea" @click="menuBtnVisible = !menuBtnVisible">
           <div>
-            <el-button id="menuBtn"
-                       circle
-                       icon="el-icon-menu"></el-button>
+            <el-button id="menuBtn" circle icon="el-icon-menu"></el-button>
           </div>
 
           <template v-if="menuBtnVisible">
             <!-- 任务派发 -->
             <div>
-              <el-tooltip effect="dark"
-                          content="任务派发"
-                          placement="right">
+              <el-tooltip effect="dark" content="任务派发" placement="right">
                 <transition name="slide-fade">
-                  <el-button @click="getTaskModel"
-                             circle
-                             icon="el-icon-notebook-1"></el-button>
+                  <el-button @click="getTaskModel" circle icon="el-icon-notebook-1"></el-button>
                 </transition>
               </el-tooltip>
             </div>
             <!-- 任务派发 -->
             <!-- 充电检测 -->
             <div>
-              <el-tooltip effect="dark"
-                          content="充电检测"
-                          placement="right">
+              <el-tooltip effect="dark" content="充电检测" placement="right">
                 <transition name="slide-fade">
-                  <el-button @click="openCheckAllEQ"
-                             circle
-                             icon="el-icon-set-up"></el-button>
-
+                  <el-button @click="openCheckAllEQ" circle icon="el-icon-set-up"></el-button>
                 </transition>
               </el-tooltip>
             </div>
             <!-- 充电检测 -->
-            <!-- 车体设置 -->
-            <div>
-              <el-tooltip effect="dark"
-                          content="车体设置"
-                          placement="right">
-                <transition name="slide-fade">
-                  <el-button @click="agvSetHandler"
-                             circle
-                             icon="el-icon-setting"></el-button>
-
-                </transition>
-              </el-tooltip>
-            </div>
-            <!-- 车体设置 -->
             <!-- 交管释放 -->
             <div>
-              <el-tooltip effect="dark"
-                          content="交管释放"
-                          placement="right">
+              <el-tooltip effect="dark" content="交管释放" placement="right">
                 <transition name="slide-fade">
-                  <el-button @click="freeControlAgvDialogOpen"
-                             circle
-                             icon="el-icon-unlock"></el-button>
-
+                  <el-button @click="freeControlAgvDialogOpen" circle icon="el-icon-unlock"></el-button>
                 </transition>
               </el-tooltip>
             </div>
             <!-- 交管释放 -->
-
           </template>
         </div>
 
@@ -412,49 +261,31 @@
           <i class="el-icon-info"></i>
         </el-link> -->
         <!-- 左上角tip -->
-
       </el-card>
     </el-col>
 
     <!-- 任务派发对话框 -->
-    <el-dialog title="任务派发"
-               :visible.sync="taskModelDialogVisible"
-               width="630px">
+    <el-dialog title="任务派发" :visible.sync="taskModelDialogVisible" width="630px">
       <!-- 搜索栏 -->
       <el-row :gutter="24">
         <el-col :span="15">
           <div class="taskModelToolBar">
             <div>任务模板名:</div>
             <div>
-              <el-input class="searchInput"
-                        clearable
-                        placeholder="请输入任务模板名"
-                        prefix-icon="el-icon-search"
-                        @input="searchInputChange"
-                        v-model="modelNameSearch"> </el-input>
+              <el-input class="searchInput" clearable placeholder="请输入任务模板名" prefix-icon="el-icon-search" @input="searchInputChange" v-model="modelNameSearch"> </el-input>
             </div>
           </div>
         </el-col>
       </el-row>
       <!-- 搜索栏 -->
       <!-- 任务列表 -->
-      <el-table :data="taskModelData.taskModelList"
-                border
-                highlight-current-row
-                height="500px">
-        <el-table-column label="任务模板名"
-                         width="200px"
-                         prop="taskModelName"></el-table-column>
-        <el-table-column label="备注"
-                         prop="remark"></el-table-column>
+      <el-table :data="taskModelData.taskModelList" border highlight-current-row height="500px">
+        <el-table-column label="任务模板名" width="200px" prop="taskModelName"></el-table-column>
+        <el-table-column label="备注" prop="remark"></el-table-column>
         <!-- 操作区 -->
-        <el-table-column label="操作"
-                         width="100px"
-                         fixed="right">
+        <el-table-column label="操作" width="100px" fixed="right">
           <template slot-scope="scope">
-            <el-button type="primary"
-                       size="mini"
-                       @click="showBindBoxNumDialog(scope.row)">派发</el-button>
+            <el-button type="primary" size="mini" @click="showBindBoxNumDialog(scope.row)">派发</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -463,199 +294,102 @@
     <!-- 任务派发对话框 -->
 
     <!-- 任务派发&箱号绑定的对话框 -->
-    <el-dialog title="箱号绑定"
-               :visible.sync="bindBoxNumDialogVisible"
-               width="630px">
+    <el-dialog title="箱号绑定" :visible.sync="bindBoxNumDialogVisible" width="630px">
       <!-- 流水线操作 -->
-      <el-form ref="waterLineFormRef"
-               :model="waterLineForm"
-               :rules="waterLineFormRules"
-               label-width="100px">
-        <el-form-item label="有无流水线"
-                      prop="actionOrNot">
-          <el-switch v-model="waterLineForm.waterLineOrNot"
-                     active-color="#13ce66"
-                     inactive-color="#ff4949"
-                     @change="handleWaterLineOrNot(waterLineForm.waterLineOrNot)">
-          </el-switch>
+      <el-form ref="waterLineFormRef" :model="waterLineForm" :rules="waterLineFormRules" label-width="100px">
+        <el-form-item label="有无流水线" prop="actionOrNot">
+          <el-switch v-model="waterLineForm.waterLineOrNot" active-color="#13ce66" inactive-color="#ff4949" @change="handleWaterLineOrNot(waterLineForm.waterLineOrNot)"> </el-switch>
         </el-form-item>
         <template v-if="waterLineForm.waterLineOrNot">
-          <el-form-item label="上料/下料"
-                        prop="inOrOut">
-            <el-select v-model="waterLineForm.inOrOut"
-                       placeholder="请选择"
-                       clearable>
-              <el-option label="上料"
-                         value="G"></el-option>
-              <el-option label="下料"
-                         value="P"></el-option>
+          <el-form-item label="上料/下料" prop="inOrOut">
+            <el-select v-model="waterLineForm.inOrOut" placeholder="请选择" clearable>
+              <el-option label="上料" value="G"></el-option>
+              <el-option label="下料" value="P"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="流水线点位"
-                        prop="point">
+          <el-form-item label="流水线点位" prop="point">
             <el-input v-model="waterLineForm.point"></el-input>
           </el-form-item>
 
           <el-form-item label="友情提示">
             1_(_GR21E_000000_999999)
           </el-form-item>
-          <el-form-item label="流水线动作"
-                        prop="action">
-            <el-input type="textarea"
-                      v-model="waterLineForm.action"></el-input>
+          <el-form-item label="流水线动作" prop="action">
+            <el-input type="textarea" v-model="waterLineForm.action"></el-input>
           </el-form-item>
         </template>
-
       </el-form>
       <!-- 流水线操作 -->
 
       <!-- 箱号绑定 -->
-      <el-table :data="nodeList"
-                border
-                stripe
-                height="350px">
-        <el-table-column label="编号"
-                         prop="id"></el-table-column>
-        <el-table-column label="点位"
-                         prop="From"></el-table-column>
-        <el-table-column label="动作"
-                         prop="action">
+      <el-table :data="nodeList" border stripe height="350px">
+        <el-table-column label="编号" prop="id"></el-table-column>
+        <el-table-column label="点位" prop="From"></el-table-column>
+        <el-table-column label="动作" prop="action">
           <template slot-scope="scope">
             <template v-if="scope.row.action == 'G'">上料</template>
             <template v-else-if="scope.row.action == 'P'">下料</template>
             <template v-else>无</template>
           </template>
         </el-table-column>
-        <el-table-column label="方向"
-                         prop="direction">
+        <el-table-column label="方向" prop="direction">
           <template slot-scope="scope">
             <template v-if="scope.row.direction == 'R'">右</template>
             <template v-else-if="scope.row.direction == 'L'">左</template>
           </template>
         </el-table-column>
-        <el-table-column label="货架层数"
-                         prop="shelf_num"></el-table-column>
+        <el-table-column label="货架层数" prop="shelf_num"></el-table-column>
 
-        <el-table-column label="箱号"
-                         prop="boxNum"
-                         width="100px">
+        <el-table-column label="箱号" prop="boxNum" width="100px">
           <template slot-scope="scope">
             <template v-if="scope.row.actionOrNot">
-              <el-input size="mini"
-                        v-model="scope.row.boxNum"></el-input>
+              <el-input size="mini" v-model="scope.row.boxNum"></el-input>
             </template>
             <template v-else>
-              <el-input size="mini"
-                        :disabled="true"
-                        v-model="scope.row.boxNum"></el-input>
+              <el-input size="mini" :disabled="true" v-model="scope.row.boxNum"></el-input>
             </template>
-
           </template>
-
         </el-table-column>
-
       </el-table>
       <!-- 箱号绑定 -->
 
       <!-- 底部区 -->
-      <span slot="footer"
-            class="dialog-footer">
+      <span slot="footer" class="dialog-footer">
         <el-button @click="bindBoxNumDialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="dispatchMission">派 发</el-button>
+        <el-button type="primary" @click="dispatchMission">派 发</el-button>
       </span>
     </el-dialog>
     <!-- 任务派发箱号绑定的对话框 -->
 
     <!-- 释放AGV对话框 -->
-    <el-dialog title="释放AGV"
-               :visible.sync="freeControlAgvDialogVisible"
-               width="400px"
-               @close="freeControlAgvDialogClosed">
+    <el-dialog title="释放AGV" :visible.sync="freeControlAgvDialogVisible" width="400px" @close="freeControlAgvDialogClosed">
       <!-- 内容主体区 -->
-      <el-form ref="freeControlAgvFormRef"
-               :model="freeControlAgvForm"
-               :rules="freeControlAgvFormRules"
-               label-width="90px">
-
-        <el-form-item label="AGV"
-                      prop="agvId">
-          <el-autocomplete popper-class="my-autocomplete"
-                           v-model="freeControlAgvForm.agvId"
-                           :fetch-suggestions="querySearch"
-                           placeholder="请输入内容"
-                           :clearable="true"
-                           @select="handleAgvSelect">
+      <el-form ref="freeControlAgvFormRef" :model="freeControlAgvForm" :rules="freeControlAgvFormRules" label-width="90px">
+        <el-form-item label="AGV" prop="agvId">
+          <el-autocomplete popper-class="my-autocomplete" v-model="freeControlAgvForm.agvId" :fetch-suggestions="querySearch" placeholder="请输入内容" :clearable="true" @select="handleAgvSelect">
             <template slot-scope="props">
               <div class="agvId">{{ props.item.agv }}</div>
               <span class="controlArea">{{ props.item.controlArea }}</span>
             </template>
           </el-autocomplete>
         </el-form-item>
-
       </el-form>
       <!-- 底部区 -->
-      <span slot="footer"
-            class="dialog-footer">
+      <span slot="footer" class="dialog-footer">
         <el-button @click="freeControlAgvDialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="freeControlAgv">确 定</el-button>
+        <el-button type="primary" @click="freeControlAgv">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 释放AGV对话框 -->
-
-    <!-- 车体设置的对话框 -->
-    <el-dialog title="车体设置"
-               :visible.sync="agvSetDialogVisible"
-               width="400px"
-               @close="agvSetDialogClosed">
-      <!-- 内容主体区 -->
-      <el-form ref="agvSetFormRef"
-               :model="agvSetForm"
-               :rules="agvSetFormRules"
-               label-width="80px"
-               class="dialogForm">
-        <el-form-item label="AGV"
-                      prop="agvId">
-          <el-select v-model="agvSetForm.agvId"
-                     placeholder="请选择"
-                     clearable>
-            <el-option v-for="agv in agvListDate"
-                       :key="agv.agvId"
-                       :label="agv.agvId"
-                       :value="agv.agvId"></el-option>
-          </el-select>
-        </el-form-item>
-
-      </el-form>
-
-      <!-- 按键区 -->
-      <div id="agvSetDialogButtonArea">
-        <el-button type="primary"
-                   @click="checkOneEQ">充电检测</el-button>
-        <el-button type="primary"
-                   @click="cancelMission">取消任务</el-button>
-        <el-button type="primary"
-                   @click="agvReset">复位</el-button>
-      </div>
-      <!-- 按键区 -->
-
-    </el-dialog>
-    <!-- 车体设置的对话框 -->
-
   </el-row>
-
 </template>
 
 <script>
 import * as d3 from '../assets/js/d3.min'
 import '../assets/js/jquery.svg.pan.zoom'
 
-import AgvList from './AgvList.vue'
-
 export default {
-  components: { AgvList },
-  data () {
+  data() {
     return {
       viewBoxInitWidth: 0,
       viewBoxInitHeight: 0,
@@ -665,6 +399,9 @@ export default {
       maxY: null,
       scale: null,
       mapObj: null,
+      floor3: false,
+      floor4: true,
+      floor5: true,
       svgPanZoom: null,
       searchPointRes: {
         pointName: '',
@@ -689,13 +426,16 @@ export default {
       // map width
       mapWidth: window.innerWidth,
       loading: true,
-      searchOptions: [{
-        value: 'point',
-        label: '点位'
-      }, {
-        value: 'agv',
-        label: '车号'
-      }],
+      searchOptions: [
+        {
+          value: 'point',
+          label: '点位'
+        },
+        {
+          value: 'agv',
+          label: '车号'
+        }
+      ],
       searchSelect: 'point',
       searchContent: '',
       agvClicked: '',
@@ -704,14 +444,14 @@ export default {
       // agv任务进度基础信息面板显示
       agvLeftInfoCardVisible: false,
       agvClickedInfo: {},
-      agvInfoCardData: [{
-        agvValue: '',
-        agvKey: ''
-      }],
+      agvInfoCardData: [
+        {
+          agvValue: '',
+          agvKey: ''
+        }
+      ],
       taskScheduleCardData: [],
-      agvForkLayer:
-
-        [0, 0, 0, 0, 0, 0],
+      agvForkLayer: [0, 0, 0, 0, 0, 0],
       agvBoxNum: [0, 0, 0, 0, 0, 0],
       agvForkList: [],
       agvGreenPath: {},
@@ -737,7 +477,7 @@ export default {
         { color: '#5cb87a', percentage: 40 },
         { color: '#1989fa', percentage: 60 },
         { color: '#6f7ad3', percentage: 80 },
-        { color: '#f56c6c', percentage: 100 },
+        { color: '#f56c6c', percentage: 100 }
       ],
       // 信息框里头卡片style
       agvInfoMiniCardStyle: {
@@ -752,7 +492,7 @@ export default {
       taskModelData: {},
       // 任务模板搜索参数
       taskModelQueryInfo: {
-        query: {},
+        query: {}
       },
       // 任务模板名搜索框
       modelNameSearch: '',
@@ -767,12 +507,11 @@ export default {
         action: ''
       },
       // 流水线表单的验证规则对象
-      waterLineFormRules: {
-      },
+      waterLineFormRules: {},
       waterLineFormRulesSource: {
         inOrOut: [{ required: true, message: '请选择上料/下料', trigger: 'blur' }],
         point: [{ required: true, message: '请输入点位', trigger: 'blur' }],
-        action: [{ required: true, message: '请输入动作', trigger: 'blur' }],
+        action: [{ required: true, message: '请输入动作', trigger: 'blur' }]
       },
       // 凑数
       addTaskModelForm: {},
@@ -781,7 +520,7 @@ export default {
       freeControlAgvDialogVisible: false,
       // freeControlAgv表单的表单数据
       freeControlAgvForm: {
-        agvId: '',
+        agvId: ''
       },
       // freeControlAgv表单的验证规则对象
       freeControlAgvFormRules: {
@@ -790,38 +529,37 @@ export default {
       // 可释放agv
       agvOptions: [],
       receiveTrafficData: {},
-
-
-      // 车体设置对话框的显示与隐藏
-      agvSetDialogVisible: false,
-      // 车体设置选择的agv
-      agvSetForm: {
-        agvId: ""
+      f3: {
+        floor: 3,
+        MapHref: require('../assets/img/科日_3F.817.png')
       },
-      // 车体设置表单的验证规则对象
-      agvSetFormRules: {
-        agvId: [{ required: true, message: '请选择AGV', trigger: 'blur' }],
+      f4: {
+        floor: 4,
+        MapHref: require('../assets/img/科日_4F.816.png')
       },
-      // 
-
+      f5: {
+        floor: 5,
+        MapHref: require('../assets/img/科日_5F.png')
+      },
+      checked: false
     }
   },
-  created () { },
-  mounted () {
-    this.mapInit()
+  created() {},
+  mounted() {
+    this.mapInit(this.f3)
     this.checkDocVis()
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.cleanTimer()
     this.cleanHiddenTimer()
   },
   methods: {
     // 检测 document visible
-    checkDocVis () {
+    checkDocVis() {
       document.onvisibilitychange = () => {
         // let browseInterval = 1000 * 60 * 30
         // let browseInterval = 1000 * 60 * 5
-        let browseInterval = this.browseInterval
+        const browseInterval = this.browseInterval
 
         if (document.visibilityState == 'visible') {
           if (this.lastBrowseTimeouter.length > 0) {
@@ -839,60 +577,119 @@ export default {
           if (window.sessionStorage.mapDataSwitch == 'off') {
             this.cleanTimer()
           }
-          this.lastBrowseTimeouter.push(setTimeout(() => {
-            this.cleanTimer()
-            window.sessionStorage.mapDataSwitch = 'off'
-          }, browseInterval))
-          this.lastBrowseTimeouter.push(setTimeout(() => {
-            window.location.reload()
-          }, browseInterval * 2))
+          this.lastBrowseTimeouter.push(
+            setTimeout(() => {
+              this.cleanTimer()
+              window.sessionStorage.mapDataSwitch = 'off'
+            }, browseInterval)
+          )
+          this.lastBrowseTimeouter.push(
+            setTimeout(() => {
+              window.location.reload()
+            }, browseInterval * 2)
+          )
         }
-
       }
     },
+    async choose3f() {
+      await this.cleanTimer()
+      this.loading = true
+      this.floor3 = false
+      this.floor4 = true
+      this.floor5 = true
+      this.mapObj = null
+      this.scale = null
+      this.isShow = false
+      this.agvGreenPath = {}
+      const map = document.getElementById('svgMap')
+      map.innerHTML = ''
+      this.mapData = []
+      await this.cleanTimer()
+      // this.agvListDate = [];
+      await this.mapInit(this.f3)
+    },
+    async choose4f() {
+      await this.cleanTimer()
+      this.loading = true
+      this.floor4 = false
+      this.floor3 = true
+      this.floor5 = true
+      this.mapObj = null
+      this.scale = null
+      this.isShow = false
+      this.agvGreenPath = {}
+      const map = document.getElementById('svgMap')
+      map.innerHTML = ''
+      this.mapData = []
+      // this.agvListDate = [];
+      await this.mapInit(this.f4)
+    },
+    async choose5f() {
+      await this.cleanTimer()
+      this.loading = true
+      this.floor5 = false
+      this.floor4 = true
+      this.floor3 = true
+      this.mapObj = null
+      this.scale = null
+      this.isShow = false
+      this.agvGreenPath = {}
+      const map = document.getElementById('svgMap')
+      map.innerHTML = ''
+      this.mapData = []
+      await this.cleanTimer()
+      // this.agvListDate = [];
+      await this.mapInit(this.f5)
+    },
     // 地图初始化
-    mapInit () {
+    mapInit(e) {
       this.oParent = document.getElementById('mapDiv')
       this.oSvg = document.getElementById('svgMap')
-      this.getMapInfo()
+      this.getMapInfo(e.MapHref, e.floor)
       setTimeout(() => {
         this.loading = false
       }, 500)
-      this.reConnectMapInfo()
+      this.reConnectMapInfo(e.MapHref, e.floor)
       setTimeout(() => {
         if (window.sessionStorage.mapDataSwitch == 'off') {
           this.cleanTimer()
-          this.hiddenTimer.push(setInterval(() => {
-            if (document.visibilityState == 'hidden') {
-              window.location.reload()
-            }
-          }, this.browseInterval * 2.1))
+          this.hiddenTimer.push(
+            setInterval(() => {
+              if (document.visibilityState == 'hidden') {
+                window.location.reload()
+              }
+            }, this.browseInterval * 2.1)
+          )
         }
-
-      }, 5000);
+      }, 5000)
     },
     // 断线重连
-    reConnectMapInfo () {
-      this.timer.push(setInterval(() => {
-        if (this.mapData.length == 0) {
-          this.getMapInfo()
-        }
-      }, 10000))
+    reConnectMapInfo(MapHref, floor) {
+      this.timer.push(
+        setInterval(() => {
+          if (this.mapData.length == 0) {
+            this.getMapInfo(MapHref, floor)
+          }
+        }, 10000)
+      )
     },
     // agv实时移动
-    agvMoveRT () {
+    agvMoveRT() {
       this.getAgvState()
-      this.timer.push(setInterval(() => {
-        this.getAgvState()
-      }, 1000))
+      this.timer.push(
+        setInterval(() => {
+          this.getAgvState()
+        }, 1000)
+      )
     },
     // 获取地图信息
-    async getMapInfo () {
-      const { data: res } = await this.$http.get('getMapInfo')
+    async getMapInfo(MapHref, floor) {
+      const { data: res } = await this.$http.get('/kr3/getMapInfo', { params: { floor: floor } })
+      // const { data: res } = await this.$http.get('/getMapInfo')
       if (res.meta.status == 200) {
         this.mapData = res.data.mapInfoList
         await this.handleYAxis()
-        await this.createMap(this.mapData, this.oSvg)
+        await this.createMap(this.mapData, this.oSvg, MapHref)
         this.svgPanZoom = await $('#svgMap').svgPanZoom()
         this.agvMoveRT()
         // setTimeout(() => {
@@ -904,72 +701,76 @@ export default {
         //     }, 100);
         //   }, 100);
         // }, 100);
-
-
       }
-
     },
     // 获取agvList信息
-    async getAgvState () {
+    async getAgvState() {
       const { data: res } = await this.$http.get('getAgvState')
 
       if (res.meta.status == 200) {
         this.agvListDate = res.data.agvList
         this.agvMove(this.mapData, this.agvListDate, this.oSvg)
       }
-
     },
     // 清除timer
-    cleanTimer () {
+    cleanTimer() {
       for (let i = 0; i < this.timer.length; i++) {
         clearInterval(this.timer.pop())
       }
     },
     // 清除hiddenTimer
-    cleanHiddenTimer () {
+    cleanHiddenTimer() {
       for (let i = 0; i < this.hiddenTimer.length; i++) {
         clearInterval(this.hiddenTimer.pop())
       }
     },
     // svg ↑
-    svgPanZoomScaleUp () {
-      let vBWidth = Number(document.getElementById('svgMap').getAttribute('viewBox').split(' ')[2])
+    svgPanZoomScaleUp() {
+      const vBWidth = Number(
+        document
+          .getElementById('svgMap')
+          .getAttribute('viewBox')
+          .split(' ')[2]
+      )
 
       if (vBWidth >= this.viewBoxInitWidth / 4) {
         this.svgPanZoom.zoomIn()
       }
     },
     // svg ↓
-    svgPanZoomScaleDown () {
-      let vBWidth = Number(document.getElementById('svgMap').getAttribute('viewBox').split(' ')[2])
+    svgPanZoomScaleDown() {
+      const vBWidth = Number(
+        document
+          .getElementById('svgMap')
+          .getAttribute('viewBox')
+          .split(' ')[2]
+      )
 
       if (vBWidth < this.viewBoxInitWidth) {
         this.svgPanZoom.zoomOut()
       }
-
     },
     // svg ♨
-    svgPanZoomReset () {
+    svgPanZoomReset() {
       this.svgPanZoom.reset()
     },
 
-    createSvgTag (tag, objAttr) {
+    createSvgTag(tag, objAttr) {
       var oTag = document.createElementNS(this.svgNS, tag)
       for (var attr in objAttr) {
         oTag.setAttribute(attr, objAttr[attr])
       }
       return oTag
     },
-    handleYAxis () {
-      let newMapData = this.mapData.map(point => {
+    handleYAxis() {
+      const newMapData = this.mapData.map(point => {
         point.map_y = -point.map_y
         return point
       })
       this.mapData = newMapData
-
     },
     // 获取任务状态列表
-    async getTaskModel () {
+    async getTaskModel() {
       const { data: res } = await this.$http.get('taskModelPlus', { params: this.taskModelQueryInfo })
       if (res.meta.status !== 200) {
         // return this.$message.error(res.meta.msg)
@@ -983,7 +784,7 @@ export default {
       this.taskModelDialogVisible = true
     },
     // 检测搜索栏
-    searchInputChange () {
+    searchInputChange() {
       if (this.modelNameSearch !== '') {
         this.taskModelQueryInfo.query.taskModelName = this.modelNameSearch
       } else {
@@ -992,8 +793,8 @@ export default {
       this.getTaskModel()
     },
     // nodeList解码
-    nodeListDecode (taskData) {
-      let actionList = taskData.missionData
+    nodeListDecode(taskData) {
+      const actionList = taskData.missionData
       if (!actionList) return
       this.addTaskModelForm.taskModelName = taskData.taskModelName
       this.addTaskModelForm.remark = taskData.remark
@@ -1001,18 +802,18 @@ export default {
       if (taskData.inPoint || taskData.outPoint) {
         this.waterLineForm.waterLineOrNot = true
         if (taskData.inPoint) {
-          this.waterLineForm.inOrOut = "G"
+          this.waterLineForm.inOrOut = 'G'
           this.waterLineForm.point = taskData.inPoint
           this.waterLineForm.action = taskData.inAction
         } else {
-          this.waterLineForm.inOrOut = "P"
+          this.waterLineForm.inOrOut = 'P'
           this.waterLineForm.point = taskData.outPoint
           this.waterLineForm.action = taskData.outAction
         }
       }
 
       actionList.forEach((act, index) => {
-        let nodeRow = {}
+        const nodeRow = {}
         if (act == '') {
           nodeRow.boxNum = ''
           nodeRow.From = ''
@@ -1035,7 +836,6 @@ export default {
           nodeRow.actionOrNot = false
         }
         this.nodeList.push(nodeRow)
-
       })
 
       this.nodeList.forEach((node, index) => {
@@ -1043,12 +843,12 @@ export default {
       })
     },
     // 报文格式编码
-    submitMsgEncode () {
-      let subInfo = {}
-      subInfo.dispatchId = (new Date()).getTime() + Math.ceil(Math.random() * 1000000)
-      let missionData = []
+    submitMsgEncode() {
+      const subInfo = {}
+      subInfo.dispatchId = new Date().getTime() + Math.ceil(Math.random() * 1000000)
+      const missionData = []
       this.nodeList.forEach(node => {
-        let temp = {}
+        const temp = {}
         temp.itemNum = node.boxNum
         temp.pointId = node.From
         temp.lr = node.direction
@@ -1058,7 +858,7 @@ export default {
       })
       subInfo.missionData = missionData
       if (this.waterLineForm.waterLineOrNot) {
-        if (this.waterLineForm.inOrOut == "G") {
+        if (this.waterLineForm.inOrOut == 'G') {
           subInfo.inPoint = this.waterLineForm.point
           subInfo.inAction = this.waterLineForm.action
         } else {
@@ -1071,7 +871,7 @@ export default {
       return subInfo
     },
     // 箱号绑定框打开
-    showBindBoxNumDialog (rowData) {
+    showBindBoxNumDialog(rowData) {
       if (rowData.missionData.length === 0) {
         // return this.$message.error('任务列表不能为空')
         return this.$message({
@@ -1079,7 +879,6 @@ export default {
           message: '任务列表不能为空',
           type: 'error'
         })
-
       }
       this.nodeList = []
       this.submitForm = {}
@@ -1087,7 +886,7 @@ export default {
       this.bindBoxNumDialogVisible = true
     },
     // 任务派发
-    async dispatchMission (taskModel) {
+    async dispatchMission(taskModel) {
       // 弹框提示用户是否删除信息
       const confirmResult = await this.$confirm('此操作将提交任务, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -1124,8 +923,7 @@ export default {
         if (!res) return
       }
 
-
-      let subInfo = this.submitMsgEncode()
+      const subInfo = this.submitMsgEncode()
 
       const { data: res } = await this.$http.post('/dispatchMissionPlus', subInfo)
       if (res.meta.status != 200) {
@@ -1144,10 +942,9 @@ export default {
         type: 'success'
       })
       this.taskModelDialogVisible = false
-
     },
     // 是否流水线
-    handleWaterLineOrNot (waterLineOrNot) {
+    handleWaterLineOrNot(waterLineOrNot) {
       if (waterLineOrNot) {
         this.waterLineFormRules = this.waterLineFormRulesSource
       } else {
@@ -1161,7 +958,7 @@ export default {
       }
     },
     // 打开充电检测
-    async openCheckAllEQ () {
+    async openCheckAllEQ() {
       // 弹框提示用户是否删除信息
       const confirmResult = await this.$confirm('此操作将打开充电检测, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -1181,7 +978,7 @@ export default {
         })
       }
 
-      const { data: res } = await this.$http.get('/checkAllEQ')
+      const { data: res } = await this.$http.get('/checkALLEQ')
       if (res.meta.status != 200) {
         // return this.$message.error(res.meta.msg)
         return this.$message({
@@ -1196,11 +993,10 @@ export default {
         message: res.meta.msg,
         type: 'success'
       })
-
     },
 
     // 释放交管区
-    async freeControlArea (rowData) {
+    async freeControlArea(rowData) {
       // 弹框提示用户是否删除信息
       const confirmResult = await this.$confirm('此操作将释放该交管区, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -1238,7 +1034,7 @@ export default {
       this.getTrafficInfoList()
     },
     // 获取任务状态列表
-    async getTrafficInfoList () {
+    async getTrafficInfoList() {
       const { data: res } = await this.$http.get('getTrafficInfo', {})
       if (res.meta.status !== 200) {
         // return this.$message.error(res.meta.msg)
@@ -1247,11 +1043,11 @@ export default {
       this.receiveTrafficData = res.data
     },
     // 打开 释放AGV dialog
-    async freeControlAgvDialogOpen () {
+    async freeControlAgvDialogOpen() {
       await this.getTrafficInfoList()
       this.agvOptions = []
       this.receiveTrafficData.trafficControlList.forEach(tfArea => {
-        let agvArr = []
+        const agvArr = []
         tfArea.agvEnter.forEach(agv => {
           agvArr.push(agv)
         })
@@ -1259,30 +1055,29 @@ export default {
           agvArr.push(agv)
         })
         agvArr.forEach(agv => {
-          let temp = { 'agv': agv, 'controlArea': tfArea.controlArea }
+          const temp = { agv: agv, controlArea: tfArea.controlArea }
           this.agvOptions.push(temp)
         })
-
-      });
+      })
       this.freeControlAgvDialogVisible = true
     },
     // 释放agv时，搜索agv
-    querySearch (queryString, cb) {
-      let agvOptions = this.agvOptions
-      let results = queryString ? agvOptions.filter(this.createFilter(queryString)) : agvOptions;
+    querySearch(queryString, cb) {
+      const agvOptions = this.agvOptions
+      const results = queryString ? agvOptions.filter(this.createFilter(queryString)) : agvOptions
       // 调用 callback 返回建议列表的数据
-      cb(results);
+      cb(results)
     },
-    createFilter (queryString) {
-      return (agvOptions) => {
-        return (agvOptions.agv.toLowerCase().indexOf(queryString.toLowerCase()) !== -1);
-      };
+    createFilter(queryString) {
+      return agvOptions => {
+        return agvOptions.agv.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
+      }
     },
-    handleAgvSelect (item) {
+    handleAgvSelect(item) {
       this.freeControlAgvForm.agvId = item.agv
     },
     // freeControlAgv
-    freeControlAgv () {
+    freeControlAgv() {
       this.$refs.freeControlAgvFormRef.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.get('freeControlAgv', { params: this.freeControlAgvForm })
@@ -1302,35 +1097,31 @@ export default {
         })
         this.freeControlAgvDialogVisible = false
       })
-
     },
     // 关闭清空
-    freeControlAgvDialogClosed () {
+    freeControlAgvDialogClosed() {
       this.$refs.freeControlAgvFormRef.resetFields()
     },
 
-
-
-    structmapData (mapData) {
+    structmapData(mapData) {
       const ret = {}
-      this.mapData.forEach((point) => {
-
+      this.mapData.forEach(point => {
         const pointName = point.currentPoint
         ret[pointName] = point
       })
       return ret
     },
 
-    structAgvListDate (agvListDate) {
+    structAgvListDate(agvListDate) {
       const ret = {}
-      agvListDate.forEach((agv) => {
+      agvListDate.forEach(agv => {
         const agvName = agv.agvId
         ret[agvName] = agv
       })
       return ret
     },
 
-    getScale (mapData) {
+    getScale(mapData) {
       const winX = window.outerWidth
       const winY = window.outerHeight
       let maxX = null
@@ -1338,7 +1129,7 @@ export default {
       let minX = null
       let minY = null
 
-      mapData.forEach((point) => {
+      mapData.forEach(point => {
         if (point.map_x > maxX || maxX == null) {
           maxX = point.map_x
         }
@@ -1368,15 +1159,15 @@ export default {
       return { scale: scaleRes, minX: minX, minY: minY, maxX: maxX, maxY: maxY }
     },
 
-    switchAngle (radian) {
+    switchAngle(radian) {
       return (radian * 180) / Math.PI
     },
 
-    switchRadian (angle) {
+    switchRadian(angle) {
       return (angle * Math.PI) / 180
     },
 
-    objectFocus (point, oSvg, pointSize, pointFontSize, scale) {
+    objectFocus(point, oSvg, pointSize, pointFontSize, scale) {
       const pointStrokeColor = '#98999c'
       // let pointInfoFontColor = '#804000'
       const pointInfoFontColor = '#804000'
@@ -1411,14 +1202,9 @@ export default {
         pointFontTag.innerHTML = point.currentPoint
 
         const pointFontBgHeight = pointFontSize * 1.8
-        const pointFontBgWidth =
-          String(point.currentPoint).length * pointFontSize * 0.8
+        const pointFontBgWidth = String(point.currentPoint).length * pointFontSize * 0.8
         const pointFontBgInitX = point.map_x * scale - pointFontBgWidth / 2
-        const pointFontBgInitY =
-          point.map_y * scale -
-          pointFontBgHeight / 2 -
-          pointSize -
-          pointFontSize * 1.3
+        const pointFontBgInitY = point.map_y * scale - pointFontBgHeight / 2 - pointSize - pointFontSize * 1.3
         const pointFontBgTag = this.createSvgTag('rect', {
           id: point.currentPoint + 'FontBg',
           class: 'pointFontBgTag',
@@ -1448,7 +1234,19 @@ export default {
       }
     },
 
-    objectBlur (point, oSvg) {
+    pointName(check) {
+      if (check == true) {
+        this.mapData.forEach(point => {
+          this.objectFocus(point, this.oSvg, 3, 5, this.scale)
+        })
+      } else {
+        this.mapData.forEach(point => {
+          this.objectBlur(point, this.oSvg)
+        })
+      }
+    },
+
+    objectBlur(point, oSvg) {
       const pointSelect = document.getElementById(point.currentPoint)
       // console.log(point);
       if (pointSelect != null) {
@@ -1463,7 +1261,7 @@ export default {
       }
     },
     // 关闭信息框
-    agvInfoCardClose () {
+    agvInfoCardClose() {
       // const agvInfoCardTag = document.getElementById('agvInfoCard')
       // agvInfoCardTag.style.visibility = 'hidden'
       this.agvInfoCardVissble = false
@@ -1472,7 +1270,7 @@ export default {
       // agvLeftInfoCardTag.style.visibility = 'hidden'
     },
     // 关闭任务进度信息框
-    agvLeftInfoCardClose () {
+    agvLeftInfoCardClose() {
       // const agvInfoCardTag = document.getElementById('agvInfoCard')
       // agvInfoCardTag.style.visibility = 'hidden'
 
@@ -1481,10 +1279,10 @@ export default {
       this.agvLeftInfoCardVisible = false
     },
 
-    agvInfoCardUpdate (agv) {
+    agvInfoCardUpdate(agv) {
       this.agvClicked = agv.agvId
       this.agvClickedInfo = agv
-      let agvInfoRes = []
+      const agvInfoRes = []
       agvInfoRes.push({
         agvValue: '车体区域',
         agvKey: agv.agvArea
@@ -1516,7 +1314,6 @@ export default {
 
       this.agvInfoCardData = agvInfoRes
 
-
       // if (agv.loading.length == 0 || agv.boxNum.length == 0) {
       //   this.agvForkLayer = [0, 0, 0, 0, 0, 0]
       //   this.agvBoxNum = [0, 0, 0, 0, 0, 0]
@@ -1528,72 +1325,66 @@ export default {
       //   this.agvForkLayer = tempLoading.reverse()
       //   this.agvBoxNum = tempBoxNum.reverse()
       // }
-      let tempForkLayer = []
+      const tempForkLayer = []
       for (let i = 0; i < 6; i++) {
-        let layer = {}
+        const layer = {}
         layer.layerName = '储位 - ' + (i + 1)
         layer.existBox = agv.loading[i]
-        layer.boxNum = (agv.boxNum[i] == 0 ? '无料箱' : agv.boxNum[i])
+        // layer.boxNum = (agv.boxNum[i] == 0 ? '无料箱' : agv.boxNum[i])
         tempForkLayer.push(layer)
       }
       this.agvForkList = tempForkLayer.reverse()
 
-
       // taskSchedule
-      let taskActDate = {}
+      const taskActDate = {}
       taskActDate.taskId = agv.taskId
       taskActDate.taskActionList = agv.taskActionList
       taskActDate.taskActionIndex = agv.taskActionIndex
-      let taskArrDate = [taskActDate]
-
-
+      const taskArrDate = [taskActDate]
 
       this.taskScheduleCardData = taskArrDate
-
     },
     // 装箱情况list回调
-    forkLayerExistBoxOrNot (rowObj) {
+    forkLayerExistBoxOrNot(rowObj) {
       if (rowObj.row.existBox == 1) {
-        return { 'background': 'rgb(160, 207, 255)' }
+        return { background: 'rgb(160, 207, 255)' }
       } else {
-        return { 'background': 'rgb(217, 236, 255)' }
+        return { background: 'rgb(217, 236, 255)' }
       }
-
     },
 
     // 任务进度翻译
     // "1_(_GR21E_000000_ffffff)"
     // "1_(_GR21E_000000_ffffff),
     // 2_(_PL53E_000000_ffffff,_PL54R_000000_ffffff)"
-    translateAction (item) {
-      let action = item.action
-      let finishTime = item.finishTime
+    translateAction(item) {
+      const action = item.action
+      const finishTime = item.finishTime
       if (action.trim() == '') {
-        return "无动作"
+        return '无动作'
       } else {
-        let actionListStr = action.substring(action.indexOf('(') + 1, action.lastIndexOf(')'))
-        let actionList = actionListStr.split(',')
+        const actionListStr = action.substring(action.indexOf('(') + 1, action.lastIndexOf(')'))
+        const actionList = actionListStr.split(',')
         if (actionList.length == 1) {
           return this.translateSingleAction(actionList[0]) + '\n\n' + finishTime
         } else {
           let res = ''
           for (let i = 0; i < actionList.length; i++) {
-            res += (i + 1) + '. ' + this.translateSingleAction(actionList[i]) + '\n'
+            res += i + 1 + '. ' + this.translateSingleAction(actionList[i]) + '\n'
           }
           res += '\n' + finishTime
           return res
         }
-
       }
     },
 
     // 翻译单个动作
     // "1_(_GR21E_000000_ffffff)"
-    translateSingleAction (action) {
+    translateSingleAction(action) {
       let baseAct = ''
       let rackClass = ''
-      let boxNum = action.substring(14, 21)
-      let rackLayer = action[3]
+      const boxNum = action.substring(14, 21)
+      const rackLayer = action[3]
       if (action[1] == 'G') {
         baseAct = 'G'
       } else if (action[1] == 'P') {
@@ -1612,27 +1403,26 @@ export default {
       } else {
         if (baseAct == 'G') {
           if (rackClass == 'R') {
-            res = '从货架第' + rackLayer + "层上料"
+            res = '从货架第' + rackLayer + '层上料'
           } else if (rackClass == 'E') {
-            res = '从接驳线第' + rackLayer + "层上料"
+            res = '从接驳线第' + rackLayer + '层上料'
           }
         } else if (baseAct == 'P') {
           if (rackClass == 'R') {
-            res = "下料到货架第" + rackLayer + "层"
+            res = '下料到货架第' + rackLayer + '层'
           } else if (rackClass == 'E') {
-            res = "下料到接驳线第" + rackLayer + "层"
+            res = '下料到接驳线第' + rackLayer + '层'
           }
         }
       }
-      if (boxNum != "999999") {
-        res += "，\n箱号是" + boxNum
+      if (boxNum != '999999') {
+        res += '，\n箱号是' + boxNum
       }
       return res
     },
 
-
     // 速度dashboard 百分比处理
-    handleSpeedDashboard (speed) {
+    handleSpeedDashboard(speed) {
       speed = Math.abs(speed)
       if (!speed) {
         return 0
@@ -1642,57 +1432,56 @@ export default {
       } else if (speed <= 0) {
         return 0
       } else {
-        return speed / 2 * 100
+        return (speed / 2) * 100
       }
     },
 
     // 速度dashboard format
-    speedDashboardFormat (percentage) {
+    speedDashboardFormat(percentage) {
       return Math.abs(this.agvClickedInfo.speed.toFixed(3)) + 'm/s'
     },
 
     // 车体状态dashboard format
-    moveStatusDashboardFormat (percentage) {
+    moveStatusDashboardFormat(percentage) {
       return this.agvClickedInfo.moveStatus
     },
 
     // 卡号状态dashboard format
-    cardNowStatusDashboardFormat (percentage) {
+    cardNowStatusDashboardFormat(percentage) {
       if (this.agvClickedInfo.now != 0) {
         return this.agvClickedInfo.now
       } else {
         return '无法识别'
       }
-
     },
 
     // 车辆区域dashboard format
-    agvAreaDashboardFormat (percentage) {
+    agvAreaDashboardFormat(percentage) {
       return this.agvClickedInfo.agvArea
     },
 
     // fork has box percent
-    boxInForkPercent (loading) {
+    boxInForkPercent(loading) {
       let boxCount = 0
       for (let i = 0; i < 6; i++) {
         if (loading[i] == 1) {
           boxCount++
         }
       }
-      return Math.ceil(boxCount / 6 * 100)
+      return Math.ceil((boxCount / 6) * 100)
     },
 
     // 任务进度百分比
-    taskDonePercent (agv) {
+    taskDonePercent(agv) {
       if (agv.taskActionList.length > 0) {
-        return Math.ceil(agv.taskActionIndex / agv.taskActionList.length * 100)
+        return Math.ceil((agv.taskActionIndex / agv.taskActionList.length) * 100)
       } else {
         return 0
       }
     },
 
     // 任务进度文字显示
-    taskDonePercentFormat (percentage) {
+    taskDonePercentFormat(percentage) {
       if (percentage > 0) {
         return percentage + '%'
       } else {
@@ -1700,68 +1489,7 @@ export default {
       }
     },
 
-    agvSetHandler () {
-      this.agvSetDialogVisible = true
-    },
-    // 车体设置窗体关闭,触发的函数
-    async agvSetDialogClosed () {
-      this.$refs.agvSetFormRef.resetFields()
-    },
-    // 车辆设置验证
-    agvSetDialogValidate () {
-      let validResult = false
-      this.$refs.agvSetFormRef.validate(async valid => {
-        if (!valid) return
-        validResult = true
-      })
-
-      return validResult
-    },
-
-    // 车辆设置结果处理
-    agvSetResultHandler (res) {
-      if (res.meta.status != 200) {
-        // return this.$message.error(res.meta.msg)
-        return this.$message({
-          type: 'error',
-          message: res.meta.msg,
-          showClose: true
-        })
-      }
-      // this.$message.success(res.meta.msg)
-      this.$message({
-        type: 'success',
-        message: res.meta.msg,
-        showClose: true
-      })
-      this.agvSetDialogVisible = false
-    },
-    // 充电检测
-    async checkOneEQ () {
-      if (!this.agvSetDialogValidate()) return
-      let resList = []
-      resList.push(this.agvSetForm.agvId)
-      const { data: res } = await this.$http.post('checkOneEQ', resList)
-      this.agvSetResultHandler(res)
-
-    },
-
-    // 取消任务
-    async cancelMission () {
-      if (!this.agvSetDialogValidate()) return
-      const { data: res } = await this.$http.delete('cancel/mission/' + this.agvSetForm.agvId)
-      this.agvSetResultHandler(res)
-    },
-
-
-    // 取消任务
-    async agvReset () {
-      if (!this.agvSetDialogValidate()) return
-      const { data: res } = await this.$http.get('reset/' + this.agvSetForm.agvId)
-      this.agvSetResultHandler(res)
-    },
-
-    agvClick (agv) {
+    agvClick(agv) {
       this.agvInfoCardUpdate(agv)
 
       // console.log(agv)
@@ -1769,14 +1497,12 @@ export default {
       // agvInfoCard.style.visibility = 'visible'
       this.agvInfoCardVissble = true
 
-
-
       // const agvLeftInfoCard = document.getElementById('agvLeftInfoCard')
       // agvLeftInfoCard.style.visibility = 'visible'
       this.agvLeftInfoCardVisible = true
     },
 
-    agvFocus (agv, oSvg) {
+    agvFocus(agv, oSvg) {
       const agvSelect = document.getElementById(agv.agvId)
       const agvInfoSelect = document.getElementById(agv.agvId + 'Info')
       if (agvSelect != null && agvInfoSelect != null) {
@@ -1787,9 +1513,9 @@ export default {
       oSvg.appendChild(agvInfoSelect)
     },
 
-    agvBlur (agv, oSvg) { },
+    agvBlur(agv, oSvg) {},
 
-    setScaleAndViewBox (mapData, oSvg) {
+    setScaleAndViewBox(mapData, oSvg) {
       const getScaleRes = this.getScale(mapData)
       this.scale = getScaleRes.scale
       this.minX = getScaleRes.minX
@@ -1806,10 +1532,10 @@ export default {
       // 偏左&放大
       const svgClientWidth = oSvg.clientWidth
       const svgClientHeight = oSvg.clientHeight
-      const oSvgWidth = Math.abs(this.maxX - this.minX) * this.scale * 0.8
-      const oSvgHeight = Math.abs(this.maxY - this.minY) * this.scale * 0.8
-      const oSvgX = (this.minX) * this.scale + (oSvgWidth * 0.1) + (svgClientWidth * 0.1)
-      const oSvgY = (this.minY) * this.scale + (oSvgHeight * 0.1) + (svgClientHeight * 0.05)
+      const oSvgWidth = Math.abs(this.maxX - this.minX) * this.scale * 0.6
+      const oSvgHeight = Math.abs(this.maxY - this.minY) * this.scale * 0.6
+      const oSvgX = this.minX * this.scale + oSvgWidth * 0.1 + svgClientWidth * 0.12
+      const oSvgY = this.minY * this.scale + oSvgHeight * 0.1 + svgClientHeight * 0.17
       // const oSvgX = svgClientWidth * 0.21
       // const oSvgY = svgClientHeight * 0.13
 
@@ -1819,20 +1545,20 @@ export default {
       oSvg.setAttribute('viewBox', viewBoxAttr)
     },
 
-    createMap (mapData, oSvg) {
+    createMap(mapData, oSvg, MapHref) {
       // const backgroundMapHref = './map_resource/img/map.jpg'
 
       const pointSize = 3
       let pointColor = '#fffffe'
       const pointOpacity = 0.7
-      let pathColor = '#0080008a'
+      const pathColor = '#0080008a'
       const pathWidth = 2
       const pathOpacity = 0.9
       const pointFontSize = 5
       let backgroundMapHref = null
 
       try {
-        backgroundMapHref = require('../assets/img/map.jpg')
+        backgroundMapHref = MapHref
       } catch (error) {
         console.log(error)
       }
@@ -1872,27 +1598,21 @@ export default {
       }
 
       // path绘制
-      this.mapData.forEach((point) => {
+      this.mapData.forEach(point => {
         const startPoint = point.map_x * scale + ' ' + point.map_y * scale
-        if (
-          Object.prototype.toString.call(point.targetPoint).indexOf('String') !== -1
-        ) {
+        if (Object.prototype.toString.call(point.targetPoint).indexOf('String') !== -1) {
           point.targetPoint = JSON.parse(point.targetPoint)
         }
 
         if (point.BezierControlPoints != null) {
-          if (
-            Object.prototype.toString
-              .call(point.BezierControlPoints)
-              .indexOf('String') !== -1
-          ) {
+          if (Object.prototype.toString.call(point.BezierControlPoints).indexOf('String') !== -1) {
             point.BezierControlPoints = JSON.parse(point.BezierControlPoints)
           }
         } else {
           point.BezierControlPoints = []
         }
 
-        point.targetPoint.forEach((tp) => {
+        point.targetPoint.forEach(tp => {
           if (!mapObj[tp]) {
             return false
           }
@@ -1900,12 +1620,9 @@ export default {
           let tagDAttr = ''
           if (point.BezierControlPoints[point.targetPoint.indexOf(tp)] != null) {
             tagDAttr = 'M' + startPoint + ' C'
-            point.BezierControlPoints[point.targetPoint.indexOf(tp)].forEach(
-              (aPoint) => {
-                tagDAttr =
-                  tagDAttr + ' ' + aPoint.x * scale + ' ' + aPoint.y * scale
-              }
-            )
+            point.BezierControlPoints[point.targetPoint.indexOf(tp)].forEach(aPoint => {
+              tagDAttr = tagDAttr + ' ' + aPoint.x * scale + ' ' + aPoint.y * scale
+            })
             tagDAttr = tagDAttr + ' ' + endPoint
           } else {
             tagDAttr = 'M' + startPoint + 'L' + endPoint
@@ -1927,11 +1644,8 @@ export default {
       })
 
       // point绘制
-      this.mapData.forEach((point) => {
-        if (
-          point.currentPoint === 'Point-0001' ||
-          point.currentPoint === 'Point-0002'
-        ) {
+      this.mapData.forEach(point => {
+        if (point.currentPoint === 'Point-0001' || point.currentPoint === 'Point-0002') {
           return false
         }
         const pointTag = this.createSvgTag('rect', {
@@ -1959,7 +1673,7 @@ export default {
       })
     },
 
-    agvMove (mapData, agvListDate, oSvg) {
+    agvMove(mapData, agvListDate, oSvg) {
       const agvImgWidth = 28
       const agvImgHeight = 14
       const agvFontSize = 5
@@ -1979,20 +1693,16 @@ export default {
       const scale = this.scale
       const mapObj = this.mapObj
 
-      const agvImgCEdge = Math.sqrt(
-        Math.pow(agvImgHeight, 2) + Math.pow(agvImgWidth, 2)
-      )
+      const agvImgCEdge = Math.sqrt(Math.pow(agvImgHeight, 2) + Math.pow(agvImgWidth, 2))
 
-      agvListDate.forEach((agv) => {
+      agvListDate.forEach(agv => {
         if (agv.onLine === 'on' && agv.now !== '' && agv.now !== '0' && mapObj[agv.now] != null) {
-
           const pointNowName = agv.now
           const agvNowPoint = mapObj[pointNowName]
           const pointToName = agv.to
           const agvToPoint = mapObj[pointToName]
           const pointYetName = agv.yet
           const agvYetPoint = mapObj[pointYetName]
-
 
           if (agvNowPoint != null) {
             // 隐藏的线
@@ -2015,7 +1725,6 @@ export default {
             if (agv.taskList != null && agv.taskList.length !== 0) {
               const taskIndex = agv.taskIndex
               const taskList = agv.taskList
-
 
               // 要绿的线
               for (let i = taskIndex; i < agv.taskList.length - 1; i++) {
@@ -2044,22 +1753,13 @@ export default {
                 // if (angleIndex != -1) {
                 //   agvAngle = Number(agvNowPoint.headingAngleForMap[angleIndex])
                 // }
-                agvAngle = -Math.atan2(
-                  agvToPoint.map_y * scale - agvNowPoint.map_y * scale,
-                  agvToPoint.map_x * scale - agvNowPoint.map_x * scale
-                )
+                agvAngle = -Math.atan2(agvToPoint.map_y * scale - agvNowPoint.map_y * scale, agvToPoint.map_x * scale - agvNowPoint.map_x * scale)
               } else if (agvYetPoint != null && agvYetPoint !== 0) {
-                agvAngle = -Math.atan2(
-                  agvNowPoint.map_y * scale - agvYetPoint.map_y * scale,
-                  agvNowPoint.map_x * scale - agvYetPoint.map_x * scale
-                )
+                agvAngle = -Math.atan2(agvNowPoint.map_y * scale - agvYetPoint.map_y * scale, agvNowPoint.map_x * scale - agvYetPoint.map_x * scale)
               } else {
                 const agvFakeToPoint = mapObj[agvNowPoint.targetPoint[0]]
                 if (agvFakeToPoint != null) {
-                  agvAngle = -Math.atan2(
-                    agvFakeToPoint.map_y * scale - agvNowPoint.map_y * scale,
-                    agvFakeToPoint.map_x * scale - agvNowPoint.map_x * scale
-                  )
+                  agvAngle = -Math.atan2(agvFakeToPoint.map_y * scale - agvNowPoint.map_y * scale, agvFakeToPoint.map_x * scale - agvNowPoint.map_x * scale)
                 }
               }
             }
@@ -2075,10 +1775,7 @@ export default {
             // while (agvAngle < 0) {
             //   agvAngle += 2 * Math.PI;
             // }
-            const fontY =
-              agvNowPoint.map_y * scale -
-              Math.abs(Math.sin(agvAngle - Math.atan2(agvImgHeight, agvImgWidth))) *
-              (agvImgCEdge / 2)
+            const fontY = agvNowPoint.map_y * scale - Math.abs(Math.sin(agvAngle - Math.atan2(agvImgHeight, agvImgWidth))) * (agvImgCEdge / 2)
 
             const agvOnSvg = document.getElementById(agv.agvId)
             if (agvOnSvg == null) {
@@ -2176,39 +1873,24 @@ export default {
               d3.select('#' + agv.agvId)
                 // .transition()
                 // .duration(1000)
-                .attr(
-                  'transform',
-                  `translate(${agvX},${agvY})  rotate(${-this.switchAngle(agvAngle)})`
-                )
+                .attr('transform', `translate(${agvX},${agvY})  rotate(${-this.switchAngle(agvAngle)})`)
 
               d3.select('#' + agv.agvId + 'Info')
                 // .transition()
                 // .duration(1000)
                 .attr('transform', `translate(${fontX},${fontY})  `)
 
-              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' ||
-                agv.agvStopReasonS == 'STOP_ACT' ||
-                agv.agvStopReasonS == 'STOP_CARD') {
-                d3.select('#' + agv.agvId + 'Bg').attr(
-                  'style',
-                  'animation: aniGreen 3s linear infinite;'
-                )
+              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' || agv.agvStopReasonS == 'STOP_ACT' || agv.agvStopReasonS == 'STOP_CARD') {
+                d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniGreen 3s linear infinite;')
               } else if (agv.agvStopReasonS != null || agv.agvStopReasonS != '') {
-                d3.select('#' + agv.agvId + 'Bg').attr(
-                  'style',
-                  'animation: aniRed 3s linear infinite;'
-                )
+                d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniRed 3s linear infinite;')
               }
-
             } else {
               // agv移动
               d3.select('#' + agv.agvId)
                 .transition()
                 .duration(1000)
-                .attr(
-                  'transform',
-                  `translate(${agvX},${agvY})  rotate(${-this.switchAngle(agvAngle)})`
-                )
+                .attr('transform', `translate(${agvX},${agvY})  rotate(${-this.switchAngle(agvAngle)})`)
 
               // Info移动
               d3.select('#' + agv.agvId + 'Info')
@@ -2216,21 +1898,11 @@ export default {
                 .duration(1000)
                 .attr('transform', `translate(${fontX},${fontY})  `)
 
-              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' ||
-                agv.agvStopReasonS == 'STOP_ACT' ||
-                agv.agvStopReasonS == 'STOP_CARD') {
-                d3.select('#' + agv.agvId + 'Bg').attr(
-                  'style',
-                  'animation: aniGreen 3s linear infinite;'
-                )
+              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' || agv.agvStopReasonS == 'STOP_ACT' || agv.agvStopReasonS == 'STOP_CARD') {
+                d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniGreen 3s linear infinite;')
               } else if (agv.agvStopReasonS != null || agv.agvStopReasonS != '') {
-                d3.select('#' + agv.agvId + 'Bg').attr(
-                  'style',
-                  'animation: aniRed 3s linear infinite;'
-                )
+                d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniRed 3s linear infinite;')
               }
-
-
             }
           }
         } else {
@@ -2258,7 +1930,6 @@ export default {
             })
             this.agvGreenPath[agv.agvId] = []
           }
-
         }
 
         // const agvInfoCard = document.getElementById('agvInfoCard')
@@ -2273,7 +1944,7 @@ export default {
     },
 
     // 定位到选定物
-    locateSearchObject () {
+    locateSearchObject() {
       if (this.searchSelect === 'point') {
         this.locatePoint(this.searchContent)
       } else if (this.searchSelect === 'agv') {
@@ -2282,7 +1953,7 @@ export default {
     },
 
     // 定位点位
-    locatePoint (pointName) {
+    locatePoint(pointName) {
       const pointSize = 3
       const pointFontSize = 5
       const searchPointRes = this.searchPointRes
@@ -2292,11 +1963,8 @@ export default {
         searchPointRes.pointList = []
         searchPointRes.selectNum = 0
         searchPointRes.pointName = pointName
-        this.mapData.forEach((point) => {
-          if (
-            point.currentPoint === 'Point-0001' ||
-            point.currentPoint === 'Point-0002'
-          ) {
+        this.mapData.forEach(point => {
+          if (point.currentPoint === 'Point-0001' || point.currentPoint === 'Point-0002') {
             return false
           }
           if (point.currentPoint.indexOf(pointName) !== -1) {
@@ -2331,7 +1999,7 @@ export default {
     },
 
     // 定位agv
-    locateAgv (agvName) {
+    locateAgv(agvName) {
       // let agvName = document.getElementById('agvName').value
       const searchAgvRes = this.searchAgvRes
 
@@ -2339,13 +2007,8 @@ export default {
         searchAgvRes.agvList = []
         searchAgvRes.selectNum = 0
         searchAgvRes.agvName = agvName
-        this.agvListDate.forEach((agv) => {
-          if (
-            agv.agvId.indexOf(agvName) !== -1 &&
-            agv.onLine === 'on' &&
-            agv.now !== '' &&
-            this.mapObj[agv.now] != null
-          ) {
+        this.agvListDate.forEach(agv => {
+          if (agv.agvId.indexOf(agvName) !== -1 && agv.onLine === 'on' && agv.now !== '' && this.mapObj[agv.now] != null) {
             searchAgvRes.agvList.push(agv)
           }
         })
@@ -2363,14 +2026,8 @@ export default {
         const transformAttr = selectAgvTag.getAttribute('transform')
         // console.log(transformAttr)
         if (transformAttr != null) {
-          const agvX = transformAttr.substring(
-            transformAttr.indexOf('(') + 1,
-            transformAttr.indexOf(',')
-          )
-          const agvY = transformAttr.substring(
-            transformAttr.indexOf(',') + 1,
-            transformAttr.indexOf(')')
-          )
+          const agvX = transformAttr.substring(transformAttr.indexOf('(') + 1, transformAttr.indexOf(','))
+          const agvY = transformAttr.substring(transformAttr.indexOf(',') + 1, transformAttr.indexOf(')'))
           // console.log(agvX)
           // console.log(agvY)
           this.svgPanZoom.setCenter(agvX, agvY)
@@ -2388,7 +2045,7 @@ export default {
 }
 
 #svgMap {
-  background: #c3c3c31c;
+  background: rgb(240, 240, 240);
 }
 
 #searchMapArea {
@@ -2508,7 +2165,12 @@ export default {
     padding: 2px;
   }
 }
-
+.floor-btn {
+  position: absolute;
+  display: flex;
+  left: 8%;
+  top: 6%;
+}
 // 上线 + 电量
 .mainPlate {
   .mainPlateCol {
@@ -2612,11 +2274,6 @@ export default {
   div {
     padding: 5px;
   }
-}
-
-#agvSetDialogButtonArea {
-  display: flex;
-  justify-content: center;
 }
 
 // #mapTip {
