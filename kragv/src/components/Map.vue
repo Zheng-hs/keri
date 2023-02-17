@@ -16,7 +16,13 @@
         </div>
 
         <!-- <div>
-          <el-checkbox v-model="checked" @change="pointName">备选项</el-checkbox>
+          <el-checkbox v-model="checked" @change="pointName">点位</el-checkbox>
+        </div>
+        <div>
+          <el-checkbox v-model="mapChecked" @change="mapImg">底图</el-checkbox>
+        </div>
+        <div>
+          <el-checkbox v-model="pathChecked" @change="changePath">路线</el-checkbox>
         </div> -->
 
         <!-- agv信息面板 -->
@@ -419,7 +425,18 @@ export default {
       oParent: null,
       oSvg: null,
       agvInfoClick: null,
-      mapData: [],
+      mapData: [{
+          currentPoint: "Point-0001",
+          map_x: 97456,
+          map_y: 158198,
+          targetPoint: []
+        },
+        {
+          currentPoint: "Point-0002",
+          map_x: 253396,
+          map_y: 96268,
+          targetPoint: []
+        }],
       agvListDate: [],
       // map height
       mapHeight: window.innerHeight * 0.83,
@@ -531,17 +548,19 @@ export default {
       receiveTrafficData: {},
       f3: {
         floor: 3,
-        MapHref: require('../assets/img/科日_3F.817.png')
+        MapHref: require('../assets/img/33.png')
       },
       f4: {
         floor: 4,
-        MapHref: require('../assets/img/科日_4F.816.png')
+        MapHref: require('../assets/img/44.png')
       },
       f5: {
         floor: 5,
-        MapHref: require('../assets/img/科日_5F.png')
+        MapHref: require('../assets/img/55.png')
       },
-      checked: false
+      checked: false,
+      mapChecked: true,
+      pathChecked: true,
     }
   },
   created() {},
@@ -688,6 +707,17 @@ export default {
       // const { data: res } = await this.$http.get('/getMapInfo')
       if (res.meta.status == 200) {
         this.mapData = res.data.mapInfoList
+        // this.mapData.forEach(v => {
+        //   if(v.currentPoint === 'Point-0001') {
+        //     v.map_x = 100000
+        //     v.map_y = 156000
+        //   }
+        //   if(v.currentPoint === 'Point-0002') {
+        //     v.map_x = 250000
+        //     v.map_y = 100000
+        //   }
+
+        // })
         await this.handleYAxis()
         await this.createMap(this.mapData, this.oSvg, MapHref)
         this.svgPanZoom = await $('#svgMap').svgPanZoom()
@@ -1233,7 +1263,7 @@ export default {
         oSvg.appendChild(pointInfoTag)
       }
     },
-
+    // 点位显示隐藏
     pointName(check) {
       if (check == true) {
         this.mapData.forEach(point => {
@@ -1532,10 +1562,10 @@ export default {
       // 偏左&放大
       const svgClientWidth = oSvg.clientWidth
       const svgClientHeight = oSvg.clientHeight
-      const oSvgWidth = Math.abs(this.maxX - this.minX) * this.scale * 0.6
-      const oSvgHeight = Math.abs(this.maxY - this.minY) * this.scale * 0.6
-      const oSvgX = this.minX * this.scale + oSvgWidth * 0.1 + svgClientWidth * 0.12
-      const oSvgY = this.minY * this.scale + oSvgHeight * 0.1 + svgClientHeight * 0.17
+      const oSvgWidth = Math.abs(this.maxX - this.minX) * this.scale
+      const oSvgHeight = Math.abs(this.maxY - this.minY) * this.scale
+      const oSvgX = this.minX * this.scale + oSvgWidth * 0.005 + svgClientWidth * 0.0001
+      const oSvgY = this.minY * this.scale + oSvgHeight * 0.005 + svgClientHeight * 0.0001
       // const oSvgX = svgClientWidth * 0.21
       // const oSvgY = svgClientHeight * 0.13
 
@@ -1543,6 +1573,33 @@ export default {
       this.viewBoxInitWidth = oSvgWidth
       this.viewBoxInitHeight = oSvgHeight
       oSvg.setAttribute('viewBox', viewBoxAttr)
+    },
+
+    // 底图显示隐藏
+    mapImg() {
+      const map = document.getElementById('backgroundMap')
+      if (this.mapChecked == false) {
+        map.setAttribute(
+          'style',
+          'visibility:hidden;'
+        )
+      } else {
+        map.setAttribute(
+          'style',
+          'visibility:visible;'
+        )
+      }
+    },
+
+    // 路线显示隐藏
+    changePath() {
+      const mapObj = this.mapObj
+      if(this.pathChecked == true) {
+
+        
+      } else {
+        
+      }
     },
 
     createMap(mapData, oSvg, MapHref) {
@@ -1588,6 +1645,7 @@ export default {
           width: backgroundMapWidth,
           height: backgroundMapHeight,
           // 'style': 'cursor: pointer;',
+          style: 'visibility:visible;',
           href: backgroundMapHref
           // 'href':{'baseVal':"./img/agv.png"},
         })
@@ -1600,19 +1658,49 @@ export default {
       // path绘制
       this.mapData.forEach(point => {
         const startPoint = point.map_x * scale + ' ' + point.map_y * scale
-        if (Object.prototype.toString.call(point.targetPoint).indexOf('String') !== -1) {
+        // if (Object.prototype.toString.call(point.targetPoint).indexOf('String') !== -1) {
+        //   point.targetPoint = JSON.parse(point.targetPoint)
+        // }
+        // point.targetPoint.forEach(tp => {
+        //   if (!mapObj[tp.end.name]) {
+        //     return false
+        //   }
+        //   const endPoint = tp.end.map_x * scale + ' ' + tp.end.map_y * scale
+        //   let tagDAttr = ''
+        //   tagDAttr = 'M' + startPoint + ' ' + 'C' + tp.control_start_x * scale + ' ' + tp.control_start_y * scale + ' ' + tp.control_end_x * scale + ' ' + tp.control_end_y * scale + ' ' + endPoint
+
+        //   const pathTag = this.createSvgTag('path', {
+        //     id: point.currentPoint + '---' + tp.end.name,
+        //     class: 'pathTag',
+        //     d: tagDAttr,
+        //     stroke: pathColor,
+        //     'stroke-width': pathWidth,
+        //     fill: 'none',
+        //     opacity: pathOpacity,
+        //     // style: 'cursor: pointer;visibility:hidden;',
+        //     style: 'visibility:hidden;'
+        //   })
+        //   oSvg.appendChild(pathTag)
+        // })
+        if (
+          Object.prototype.toString.call(point.targetPoint).indexOf('String') !== -1
+        ) {
           point.targetPoint = JSON.parse(point.targetPoint)
         }
 
         if (point.BezierControlPoints != null) {
-          if (Object.prototype.toString.call(point.BezierControlPoints).indexOf('String') !== -1) {
+          if (
+            Object.prototype.toString
+              .call(point.BezierControlPoints)
+              .indexOf('String') !== -1
+          ) {
             point.BezierControlPoints = JSON.parse(point.BezierControlPoints)
           }
         } else {
           point.BezierControlPoints = []
         }
 
-        point.targetPoint.forEach(tp => {
+        point.targetPoint.forEach((tp) => {
           if (!mapObj[tp]) {
             return false
           }
@@ -1620,9 +1708,12 @@ export default {
           let tagDAttr = ''
           if (point.BezierControlPoints[point.targetPoint.indexOf(tp)] != null) {
             tagDAttr = 'M' + startPoint + ' C'
-            point.BezierControlPoints[point.targetPoint.indexOf(tp)].forEach(aPoint => {
-              tagDAttr = tagDAttr + ' ' + aPoint.x * scale + ' ' + aPoint.y * scale
-            })
+            point.BezierControlPoints[point.targetPoint.indexOf(tp)].forEach(
+              (aPoint) => {
+                tagDAttr =
+                  tagDAttr + ' ' + aPoint.x * scale + ' ' + aPoint.y * scale
+              }
+            )
             tagDAttr = tagDAttr + ' ' + endPoint
           } else {
             tagDAttr = 'M' + startPoint + 'L' + endPoint
@@ -1678,7 +1769,7 @@ export default {
       const agvImgHeight = 14
       const agvFontSize = 5
       // const agvImg = './map_resource/img/keriAGV.png'
-      const agvImg = require('../assets/img/keriAGV.png')
+      const agvImg = require('../assets/img/AGV000.png')
       const agvFontColor = '#804000'
       const agvFontBgColor = '#d5d5d5'
       const agvFontBgOpacity = 0.8
@@ -1757,7 +1848,7 @@ export default {
               } else if (agvYetPoint != null && agvYetPoint !== 0) {
                 agvAngle = -Math.atan2(agvNowPoint.map_y * scale - agvYetPoint.map_y * scale, agvNowPoint.map_x * scale - agvYetPoint.map_x * scale)
               } else {
-                const agvFakeToPoint = mapObj[agvNowPoint.targetPoint[0]]
+                const agvFakeToPoint = mapObj[agvNowPoint.targetPoint[0].end.name]
                 if (agvFakeToPoint != null) {
                   agvAngle = -Math.atan2(agvFakeToPoint.map_y * scale - agvNowPoint.map_y * scale, agvFakeToPoint.map_x * scale - agvNowPoint.map_x * scale)
                 }
@@ -1880,7 +1971,7 @@ export default {
                 // .duration(1000)
                 .attr('transform', `translate(${fontX},${fontY})  `)
 
-              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' || agv.agvStopReasonS == 'STOP_ACT' || agv.agvStopReasonS == 'STOP_CARD') {
+              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' || agv.agvStopReasonS === '正在动作中' || agv.agvStopReasonS === '在码上停止' || agv.agvStopReasonS === '台车无码，等待车体自动复位' || agv.agvStopReasonS === '交管停止，等待交管释放' || agv.agvStopReasonS === '等待停止，等待中控发Go') {
                 d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniGreen 3s linear infinite;')
               } else if (agv.agvStopReasonS != null || agv.agvStopReasonS != '') {
                 d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniRed 3s linear infinite;')
@@ -1898,7 +1989,7 @@ export default {
                 .duration(1000)
                 .attr('transform', `translate(${fontX},${fontY})  `)
 
-              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' || agv.agvStopReasonS == 'STOP_ACT' || agv.agvStopReasonS == 'STOP_CARD') {
+              if (agv.agvStopReasonS == null || agv.agvStopReasonS == '' || agv.agvStopReasonS === '正在动作中' || agv.agvStopReasonS === '在码上停止' || agv.agvStopReasonS === '台车无码，等待车体自动复位' || agv.agvStopReasonS === '交管停止，等待交管释放' || agv.agvStopReasonS === '等待停止，等待中控发Go') {
                 d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniGreen 3s linear infinite;')
               } else if (agv.agvStopReasonS != null || agv.agvStopReasonS != '') {
                 d3.select('#' + agv.agvId + 'Bg').attr('style', 'animation: aniRed 3s linear infinite;')

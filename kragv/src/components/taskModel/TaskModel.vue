@@ -11,6 +11,7 @@
 
       <!-- 任务列表 -->
       <el-table :data="taskModelData" border highlight-current-row :height="tableHeight">
+        <el-table-column  type="index"  width="50"></el-table-column>
         <el-table-column label="任务模板名" prop="templateName"></el-table-column>
         <!-- 操作区 -->
         <el-table-column label="操作">
@@ -59,7 +60,7 @@
         <el-radio v-model="checked" :label="index" @change="choose">
           <div class="line1">
             <div>请选择站点：</div>
-            <el-select v-model="actions[index].point" placeholder="请选择站点">
+            <el-select v-model="actions[index].point" filterable placeholder="请选择站点">
               <el-option v-for="item in pointList" :key="item.workSiteId" :label="item.description" :value="item.workSiteId"> </el-option>
             </el-select>
           </div>
@@ -323,7 +324,7 @@ export default {
       }
       this.taskModelData = res.data.templateList
       const { data: res1 } = await this.$http.get('/kr3/getTaskArgs')
-      if (res.meta.status == 200) {
+      if (res1.meta.status == 200) {
         this.pointList = res1.data.workSiteList
         this.actionList = res1.data.actionArgsList
         this.agvList = res1.data.agvIdList

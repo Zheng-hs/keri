@@ -3,7 +3,7 @@
     <!-- 卡片视图区 -->
     <el-card>
       <!-- 搜索与添加区 -->
-      <el-row :gutter="20"
+      <!-- <el-row :gutter="20"
               class="btnrow">
         <el-col class="btnrow1">
           <el-button type="primary"
@@ -11,7 +11,6 @@
 
         </el-col>
         <el-col class="btnrow2">
-          <!-- 搜索框 -->
           <div id="searchMapArea">
             <el-input placeholder="请输入搜索内容"
                       v-model="searchContent"
@@ -32,46 +31,33 @@
             </el-input>
           </div>
         </el-col>
-      </el-row>
+      </el-row> -->
 
       <!-- 任务列表 -->
-      <el-table :data="receiveData.trafficControlList"
+      <el-table :data="receiveData.traffic"
                 border
                 highlight-current-row
                 :height="tableHeight">
-        <el-table-column label="交管区域"
-                         width="300px"
-                         prop="controlArea"></el-table-column>
-        <el-table-column label="区域内AGV">
+        <el-table-column label="AGV名称">
           <template slot-scope="scope">
-            {{ scope.row.agvEnter ? scope.row.agvEnter.join(' , ') : scope.row.agvEnter }}
+            {{ scope.row.agvName }}
           </template>
         </el-table-column>
-        <el-table-column label="待进入AGV">
+        <el-table-column label="被管制点位">
           <template slot-scope="scope">
-            {{ scope.row.agvWaitEnter ? scope.row.agvWaitEnter.join(' , ') : scope.row.agvWaitEnter }}
+            {{ scope.row.bookingList ? scope.row.bookingList.join(' , ') : scope.row.bookingList }}
           </template>
         </el-table-column>
         <!-- 操作区 -->
         <el-table-column label="操作"
-                         width="150px"
-                         fixed="right">
+                         width="150px">
           <template slot-scope="scope">
-            <el-button type="primary"
+            <el-button type="danger"
                        size="mini"
-                       @click="freeControlArea(scope.row)">释放交管区</el-button>
+                       @click="freeControlArea(scope.row.agvName)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <!-- 分页区域 -->
-      <el-pagination @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange"
-                     :current-page="queryInfo.pagenum"
-                     :page-sizes="[10, 20, 50, 100]"
-                     :page-size="queryInfo.pagesize"
-                     layout="total, sizes, prev, pager, next, jumper"
-                     :total="total"></el-pagination>
 
     </el-card>
 
@@ -209,13 +195,12 @@ export default {
     },
     // 获取任务状态列表
     async getTrafficInfoList () {
-      const { data: res } = await this.$http.get('getTrafficInfo', { params: this.queryInfo })
+      const { data: res } = await this.$http.get('/traffic/allLockedArea')
       if (res.meta.status !== 200) {
         // return this.$message.error(res.meta.msg)
         return console.log(res.meta.msg)
       }
       this.receiveData = res.data
-      this.total = res.data.total
     },
     // 监听pagesize改变的事件
     handleSizeChange (newSize) {
@@ -244,9 +229,9 @@ export default {
       this.getTrafficInfoList()
     },
     // 释放交管区
-    async freeControlArea (rowData) {
+    async freeControlArea (agv) {
       // 弹框提示用户是否删除信息
-      const confirmResult = await this.$confirm('此操作将释放该交管区, 是否继续?', '提示', {
+      const confirmResult = await this.$confirm('此操作将删除该信息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -264,7 +249,7 @@ export default {
         })
       }
 
-      const { data: res } = await this.$http.get('freeControlArea', { params: { controlArea: rowData.controlArea } })
+      const { data: res } = await this.$http.delete((`/traffic/clear/${agv}`))
       if (res.meta.status != 200) {
         // return this.$message.error(res.meta.msg)
         return this.$message({
@@ -342,12 +327,9 @@ export default {
     freeControlAgvDialogClosed () {
       this.$refs.freeControlAgvFormRef.resetFields()
     }
-    // 
-    // 
+
   }
 
-  //
-  //
 }
 </script>
 

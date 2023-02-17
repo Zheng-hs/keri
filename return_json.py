@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import json
 from flask_cors import CORS
+from sqlalchemy import true
 
 app = Flask(__name__)
 CORS(app)
@@ -920,8 +921,8 @@ def getMapInfoq():
                 },
                 {
                     "currentPoint": "Point-0002",
-                    "map_x": 117750,
-                    "map_y": -82500,
+                    "map_x": 817750,
+                    "map_y": -482500,
                     "map_z": 0,
                     "targetPoint": []
                 }
@@ -4748,9 +4749,10 @@ def getAgvState():
         "data": {
             "total": 1,
             "pagenum": 0,
-            "agvList": [{
+            "agvList": [
+                {
                 "agvArea": "null",
-                "agvId": 'agv001',
+                "agvId": 'agv031',
                 "taskId": 'Task_20210619101513075',
                 "taskIndex": 1,
                 "moveStatus": 'stop',
@@ -4763,7 +4765,7 @@ def getAgvState():
                 "powerChargeLevelHigh": 0,
                 "powerChargeLevelLow": 0,
                 "powerChargeLevelOff": 0,
-                "now": '10204',
+                "now": '11908',
                 "to": "10205",
                 "yet": "10203",
                 "speed": 1.0,
@@ -4818,7 +4820,363 @@ def getAgvState():
                     }
                 ],
                 "taskActionIndex": 2,
-            }, ]
+            },
+                {
+                "agvArea": "null",
+                "agvId": 'agv011',
+                "taskId": 'Task_20210619101513075',
+                "taskIndex": 1,
+                "moveStatus": 'stop',
+                "agvStopReasonS": "STOP_CARD",
+                "batteryLevel": 80,
+                "headingAngle": '-90',
+                "ipAddress": '127.0.0.1:47340',
+                "loading": [0, 0, 1, 1, 0, 1],
+                "onLine": 'on',
+                "powerChargeLevelHigh": 0,
+                "powerChargeLevelLow": 0,
+                "powerChargeLevelOff": 0,
+                "now": '10225',
+                "to": "10205",
+                "yet": "10203",
+                "speed": 1.0,
+                "taskCount": 5,
+                "taskEndTime": "null",
+                "taskList": [
+                    '10203',
+                    '10204',
+                    '10205',
+                    '10206',
+                    '10207',
+                ],
+                "taskStatus": 'task',
+                "unBlock": '1',
+                "updateTime": '2021-06-19 10:53:20',
+                "taskActionLists":[],
+                "taskActionList":[
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_PL53R_000000_567456,_PL54R_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_PR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_GL53R_000000_ffffff,_PL54R_000000_ffffff)",
+                        "finishTime": ""
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    }
+                ],
+                "taskActionIndex": 2,
+            },
+                {
+                "agvArea": "null",
+                "agvId": 'agv021',
+                "taskId": 'Task_20210619101513075',
+                "taskIndex": 1,
+                "moveStatus": 'stop',
+                "agvStopReasonS": "STOP_CARD",
+                "batteryLevel": 80,
+                "headingAngle": '-90',
+                "ipAddress": '127.0.0.1:47340',
+                "loading": [0, 0, 1, 1, 0, 1],
+                "onLine": 'on',
+                "powerChargeLevelHigh": 0,
+                "powerChargeLevelLow": 0,
+                "powerChargeLevelOff": 0,
+                "now": '11802',
+                "to": "10205",
+                "yet": "10203",
+                "speed": 1.0,
+                "taskCount": 5,
+                "taskEndTime": "null",
+                "taskList": [
+                    '10203',
+                    '10204',
+                    '10205',
+                    '10206',
+                    '10207',
+                ],
+                "taskStatus": 'task',
+                "unBlock": '1',
+                "updateTime": '2021-06-19 10:53:20',
+                "taskActionLists":[],
+                "taskActionList":[
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_PL53R_000000_567456,_PL54R_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_PR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_GL53R_000000_ffffff,_PL54R_000000_ffffff)",
+                        "finishTime": ""
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    }
+                ],
+                "taskActionIndex": 2,
+            },
+                {
+                "agvArea": "null",
+                "agvId": 'agv022',
+                "taskId": 'Task_20210619101513075',
+                "taskIndex": 1,
+                "moveStatus": 'stop',
+                "agvStopReasonS": "STOP_CARD",
+                "batteryLevel": 80,
+                "headingAngle": '-90',
+                "ipAddress": '127.0.0.1:47340',
+                "loading": [0, 0, 1, 1, 0, 1],
+                "onLine": 'on',
+                "powerChargeLevelHigh": 0,
+                "powerChargeLevelLow": 0,
+                "powerChargeLevelOff": 0,
+                "now": '11902',
+                "to": "10205",
+                "yet": "10203",
+                "speed": 1.0,
+                "taskCount": 5,
+                "taskEndTime": "null",
+                "taskList": [
+                    '10203',
+                    '10204',
+                    '10205',
+                    '10206',
+                    '10207',
+                ],
+                "taskStatus": 'task',
+                "unBlock": '1',
+                "updateTime": '2021-06-19 10:53:20',
+                "taskActionLists":[],
+                "taskActionList":[
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_PL53R_000000_567456,_PL54R_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_PR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_GL53R_000000_ffffff,_PL54R_000000_ffffff)",
+                        "finishTime": ""
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    }
+                ],
+                "taskActionIndex": 2,
+            },
+                {
+                "agvArea": "null",
+                "agvId": 'agv006',
+                "taskId": 'Task_20210619101513075',
+                "taskIndex": 1,
+                "moveStatus": 'stop',
+                "agvStopReasonS": "STOP_CARD",
+                "batteryLevel": 80,
+                "headingAngle": '-90',
+                "ipAddress": '127.0.0.1:47340',
+                "loading": [0, 0, 1, 1, 0, 1],
+                "onLine": 'on',
+                "powerChargeLevelHigh": 0,
+                "powerChargeLevelLow": 0,
+                "powerChargeLevelOff": 0,
+                "now": '10201',
+                "to": "10205",
+                "yet": "10203",
+                "speed": 1.0,
+                "taskCount": 5,
+                "taskEndTime": "null",
+                "taskList": [
+                    '10203',
+                    '10204',
+                    '10205',
+                    '10206',
+                    '10207',
+                ],
+                "taskStatus": 'task',
+                "unBlock": '1',
+                "updateTime": '2021-06-19 10:53:20',
+                "taskActionLists":[],
+                "taskActionList":[
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_PL53R_000000_567456,_PL54R_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_PR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_GL53R_000000_ffffff,_PL54R_000000_ffffff)",
+                        "finishTime": ""
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    }
+                ],
+                "taskActionIndex": 2,
+            },
+                {
+                "agvArea": "null",
+                "agvId": 'agv005',
+                "taskId": 'Task_20210619101513075',
+                "taskIndex": 1,
+                "moveStatus": 'stop',
+                "agvStopReasonS": "STOP_CARD",
+                "batteryLevel": 80,
+                "headingAngle": '-90',
+                "ipAddress": '127.0.0.1:47340',
+                "loading": [0, 0, 1, 1, 0, 1],
+                "onLine": 'on',
+                "powerChargeLevelHigh": 0,
+                "powerChargeLevelLow": 0,
+                "powerChargeLevelOff": 0,
+                "now": '10101',
+                "to": "10205",
+                "yet": "10203",
+                "speed": 1.0,
+                "taskCount": 5,
+                "taskEndTime": "null",
+                "taskList": [
+                    '10203',
+                    '10204',
+                    '10205',
+                    '10206',
+                    '10207',
+                ],
+                "taskStatus": 'task',
+                "unBlock": '1',
+                "updateTime": '2021-06-19 10:53:20',
+                "taskActionLists":[],
+                "taskActionList":[
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_PL53R_000000_567456,_PL54R_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_PR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "2_(_GL53R_000000_ffffff,_PL54R_000000_ffffff)",
+                        "finishTime": ""
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    },
+                    {
+                        "pointId": 1000000016,
+                        "action": "1_(_GR21E_000000_ffffff)",
+                        "finishTime": "2021-09-08 15:00:00 / 进行中"
+                    }
+                ],
+                "taskActionIndex": 2,
+            },
+            ]
         },
         "meta": {"msg": "地图信息成功", "status": 200}
     }
@@ -5139,4 +5497,4 @@ def checkALLEQclose():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port="8088", debug=False)
+    app.run(host="127.0.0.1", port="8999", debug=True)

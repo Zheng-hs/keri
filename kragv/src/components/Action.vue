@@ -11,6 +11,7 @@
 
       <!-- 任务列表 -->
       <el-table :data="actionList" border highlight-current-row stripe :height="tableHeight">
+        <el-table-column  type="index"  width="50"></el-table-column>
         <el-table-column label="动作参数" prop="actionArgs"></el-table-column>
         <el-table-column label="描述" prop="description"></el-table-column>
         <!-- 操作区 -->

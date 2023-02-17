@@ -3,7 +3,7 @@
     <!-- 头部 -->
     <el-header>
       <div class="header-right">
-        <img id="logoImg" src="../assets/logo.png" />
+        <img id="logoImg" src="../assets/logo3.png" />
       </div>
 
       <div class="header-center-left"></div>
@@ -52,22 +52,21 @@
             <span>流水线任务派发</span>
           </el-menu-item> -->
 
-          <el-menu-item index="/action" @click="saveNavState('/action')">
-            <!-- 文本 -->
+          <!-- <el-menu-item index="/action" @click="saveNavState('/action')">
             <span>动作管理</span>
-          </el-menu-item>
-          <el-menu-item index="/group" @click="saveNavState('/group')">
-            <!-- 文本 -->
-            <span>工作组管理</span>
-          </el-menu-item>
-          <el-menu-item index="/taskname" @click="saveNavState('/taskname')">
-            <!-- 文本 -->
+          </el-menu-item> -->
+          <!-- <el-menu-item index="/group" @click="saveNavState('/group')">
+            <span>工作组</span>
+          </el-menu-item> -->
+          <!-- <el-menu-item index="/taskname" @click="saveNavState('/taskname')">
             <span>站点管理</span>
           </el-menu-item>
-          <el-menu-item index="/user" @click="saveNavState('/user')" v-if="currentAuthority == 99">
-            <!-- 文本 -->
-            <span>用户管理</span>
+          <el-menu-item index="/mapaction" @click="saveNavState('/mapaction')">
+            <span>动作规则管理</span>
           </el-menu-item>
+          <el-menu-item index="/user" @click="saveNavState('/user')" v-if="currentAuthority == 99">
+            <span>用户管理</span>
+          </el-menu-item> -->
         </el-menu>
         <!-- 菜单 -->
       </div>
@@ -435,16 +434,15 @@ export default {
   // width: 80%;
   // height: 15%;
   // border-radius: 50%;
-  padding: 10px;
+  padding:0px 25px;
   display: flex;
   align-items: center;
   // margin-left: 15px;
   display: inline-block;
-  height: 60px;
+  height: 40px;
+  width: 200px;
   vertical-align: middle;
   transition: height 0.2s;
-  padding-top: 15px;
-  padding-bottom: 5px;
 }
 
 .header-title {
@@ -472,7 +470,7 @@ export default {
 // 中部导航栏
 .header-center-right {
   // width: 550px;
-  width: 1000px;
+  // width: 1000px;
   // float: right !important;
   .el-menu {
     // background-color: rgba(1, 1, 1, 0);

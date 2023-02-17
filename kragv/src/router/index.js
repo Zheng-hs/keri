@@ -15,6 +15,7 @@ import TaskModelAddPlus from '../components/taskModelPlus/TaskModelAddPlus'
 import TaskModelEditPlus from '../components/taskModelPlus/TaskModelEditPlus'
 import User from '../components/User'
 import Action from '../components/Action'
+import MapAction from '../components/mapAction'
 import Group from '../components/Group'
 import TaskName from '../components/TaskName'
 import SystemTaskAdd from '../components/SystemTaskAdd'
@@ -62,6 +63,10 @@ const routes = [
       {
         path: '/action',
         component: Action
+      },
+      {
+        path: '/mapaction',
+        component: MapAction
       },
       {
         path: '/systemtaskadd',

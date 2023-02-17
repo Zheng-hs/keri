@@ -11,6 +11,7 @@
 
       <!-- 任务列表 -->
       <el-table :data="taskNameList" border highlight-current-row stripe :height="tableHeight">
+        <el-table-column  type="index"  width="50"></el-table-column>
         <el-table-column label="点位" prop="idInMap"></el-table-column>
         <el-table-column label="功能参数" prop="func"></el-table-column>
         <el-table-column label="可用车辆" prop="agvLimit">
